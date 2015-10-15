@@ -1,0 +1,9 @@
+{
+  "realm": "SISTEMA_FINANCIERO",
+  "realm-public-key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjGZyJdyP2+FLo7Fj2KCjWYVUrQUaun5QN6qJOhg1gKoU2orSDSw34TPSLFX3Iy+3QA+TxlkHZ9uxKhSu/486i3jZ/wy4YEzJIhGA9DDYGQ5Ycm/tvJbOYKZvujy2fsKMNVGi8EeJOXjg7n9OdOny1ZA7FPUeGKUyeR5jpJpbiZ9tiBFVB22yAiEoWxwKlpD/G3NUZgCYCXVyGG5NOp8TmToAQs6bnCjY76GhXpacbued5jIB+AkC9jnt6RJQtpi3qCSOjOKVpl1HvFdAuDaDqAg9yoPTJ8RcmG/z31bG1gDrFkGzYPbHfjpRKtwo+jYkGJLqxKn/VeGdIKI+igRhRwIDAQAB",
+  "bearer-only": true,
+  "auth-server-url": "http://multivadelsur.ddns.net:8080/auth",
+  "ssl-required": "none",
+  "resource": "SISTCOOP_REST",
+  "enable-cors": true
+}
