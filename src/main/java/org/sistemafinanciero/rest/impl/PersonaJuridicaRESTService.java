@@ -101,17 +101,20 @@ public class PersonaJuridicaRESTService implements PersonaJuridicaREST {
 			personaJuridica.setRepresentanteLegal(representante);
 
 			Set<Accionista> accionistasFinal = new HashSet<Accionista>();
-			Set<org.sistemafinanciero.rest.dto.PersonaJuridicaDTO.Accionista> accionistas = persona.getAccionistas();
-			for (org.sistemafinanciero.rest.dto.PersonaJuridicaDTO.Accionista accionista : accionistas) {
-				Accionista accionistaFinal = new Accionista();
-				accionistaFinal.setIdAccionista(null);
-				PersonaNatural person = new PersonaNatural();
-				person.setIdPersonaNatural(accionista.getIdPersona());
-				accionistaFinal.setPersonaNatural(person);
-				accionistaFinal.setPorcentajeParticipacion(accionista.getPorcentaje());
+			if(persona.getAccionistas() != null) {
+			    Set<org.sistemafinanciero.rest.dto.PersonaJuridicaDTO.Accionista> accionistas = persona.getAccionistas();
+	            for (org.sistemafinanciero.rest.dto.PersonaJuridicaDTO.Accionista accionista : accionistas) {
+	                Accionista accionistaFinal = new Accionista();
+	                accionistaFinal.setIdAccionista(null);
+	                PersonaNatural person = new PersonaNatural();
+	                person.setIdPersonaNatural(accionista.getIdPersona());
+	                accionistaFinal.setPersonaNatural(person);
+	                accionistaFinal.setPorcentajeParticipacion(accionista.getPorcentaje());
 
-				accionistasFinal.add(accionistaFinal);
+	                accionistasFinal.add(accionistaFinal);
+	            }
 			}
+			
 			personaJuridica.setAccionistas(accionistasFinal);
 			BigInteger idPersona = personaJuridicaServiceTS.create(personaJuridica);
 			URI resource = new URI(baseUrl + "/" + idPersona.toString());
