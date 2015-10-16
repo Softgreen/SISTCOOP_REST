@@ -1,8 +1,5 @@
 package org.sistemafinanciero.entity;
 
-// Generated 02-may-2014 11:48:28 by Hibernate Tools 4.0.0
-
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -29,95 +28,99 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "SUCURSAL", schema = "C##BDSISTEMAFINANCIERO")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
+@NamedQueries({
+        @NamedQuery(name = Sucursal.FindByFilterText, query = "SELECT s FROM Sucursal s WHERE s.denominacion LIKE :filterText OR s.abreviatura LIKE :filterText") })
 public class Sucursal implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	private BigInteger idSucursal;
-	private String denominacion;
-	private String abreviatura;
-	private int estado;
-	private Set agencias = new HashSet(0);
+    public final static String FindByFilterText = "Sucursal.FindByFilterText";
 
-	public Sucursal() {
-	}
+    private BigInteger idSucursal;
+    private String denominacion;
+    private String abreviatura;
+    private int estado;
+    private Set agencias = new HashSet(0);
 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="SUCURSAL_SEQ")
-	@SequenceGenerator(name="SUCURSAL_SEQ", initialValue=1, allocationSize=1, sequenceName="SUCURSAL_SEQ")
-	@XmlElement(name = "id")	
-	@Id
-	@Column(name = "ID_SUCURSAL", unique = true, nullable = false, precision = 22, scale = 0)
-	public BigInteger getIdSucursal() {
-		return this.idSucursal;
-	}
+    public Sucursal() {
+    }
 
-	public void setIdSucursal(BigInteger idSucursal) {
-		this.idSucursal = idSucursal;
-	}
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SUCURSAL_SEQ")
+    @SequenceGenerator(name = "SUCURSAL_SEQ", initialValue = 1, allocationSize = 1, sequenceName = "SUCURSAL_SEQ")
+    @XmlElement(name = "id")
+    @Id
+    @Column(name = "ID_SUCURSAL", unique = true, nullable = false, precision = 22, scale = 0)
+    public BigInteger getIdSucursal() {
+        return this.idSucursal;
+    }
 
-	@Column(name = "DENOMINACION", nullable = false, length = 100, columnDefinition = "nvarchar2")
-	public String getDenominacion() {
-		return this.denominacion;
-	}
+    public void setIdSucursal(BigInteger idSucursal) {
+        this.idSucursal = idSucursal;
+    }
 
-	public void setDenominacion(String denominacion) {
-		this.denominacion = denominacion;
-	}
+    @Column(name = "DENOMINACION", nullable = false, length = 100, columnDefinition = "nvarchar2")
+    public String getDenominacion() {
+        return this.denominacion;
+    }
 
-	@Column(name = "ABREVIATURA", length = 20, columnDefinition = "nvarchar2")
-	public String getAbreviatura() {
-		return this.abreviatura;
-	}
+    public void setDenominacion(String denominacion) {
+        this.denominacion = denominacion;
+    }
 
-	public void setAbreviatura(String abreviatura) {
-		this.abreviatura = abreviatura;
-	}
+    @Column(name = "ABREVIATURA", length = 20, columnDefinition = "nvarchar2")
+    public String getAbreviatura() {
+        return this.abreviatura;
+    }
 
-	@Column(name = "ESTADO", nullable = false, precision = 22, scale = 0)
-	public boolean getEstado() {
-		return this.estado == 1;
-	}
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
 
-	public void setEstado(boolean estado) {
-		this.estado = (estado == true ? 1 : 0);
-	}
+    @Column(name = "ESTADO", nullable = false, precision = 22, scale = 0)
+    public boolean getEstado() {
+        return this.estado == 1;
+    }
 
-	@XmlTransient
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sucursal")
-	public Set<Agencia> getAgencias() {
-		return this.agencias;
-	}
+    public void setEstado(boolean estado) {
+        this.estado = (estado == true ? 1 : 0);
+    }
 
-	public void setAgencias(Set agencias) {
-		this.agencias = agencias;
-	}
+    @XmlTransient
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "sucursal")
+    public Set<Agencia> getAgencias() {
+        return this.agencias;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((idSucursal == null) ? 0 : idSucursal.hashCode());
-		return result;
-	}
+    public void setAgencias(Set agencias) {
+        this.agencias = agencias;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Sucursal))
-			return false;
-		Sucursal other = (Sucursal) obj;
-		if (idSucursal == null) {
-			if (other.idSucursal != null)
-				return false;
-		} else if (!idSucursal.equals(other.idSucursal))
-			return false;
-		return true;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((idSucursal == null) ? 0 : idSucursal.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof Sucursal))
+            return false;
+        Sucursal other = (Sucursal) obj;
+        if (idSucursal == null) {
+            if (other.idSucursal != null)
+                return false;
+        } else if (!idSucursal.equals(other.idSucursal))
+            return false;
+        return true;
+    }
 
 }

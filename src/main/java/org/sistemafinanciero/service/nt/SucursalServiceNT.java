@@ -12,4 +12,6 @@ import org.sistemafinanciero.entity.Sucursal;
 public interface SucursalServiceNT extends AbstractServiceNT<Sucursal> {
 
 	List<Agencia> getAgencias(BigInteger idSucursal);
+
+    List<Sucursal> findAll(String filterText, Integer offset, Integer limit);
 }
