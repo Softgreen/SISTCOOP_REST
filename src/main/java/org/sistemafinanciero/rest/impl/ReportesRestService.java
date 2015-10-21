@@ -300,4 +300,29 @@ public class ReportesRestService implements ReportesRest {
         totalCellEuros.setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(new PdfPCell(totalCellEuros));
     }
+
+    @Override
+    public Response reporteDebeHaberTotales(Long fecha, TipoDebeHaber tipoDebeHaber, BigInteger idMoneda) {
+        Date fechaReporte;
+        if (fecha == null) {
+            fechaReporte = Calendar.getInstance().getTime();
+        } else {
+            fechaReporte = new Date(fecha);
+        }
+        BigDecimal result = reportesServiceNT.getDebeHaberTotal(fechaReporte, idMoneda, tipoDebeHaber);
+        Response response = Response.status(Response.Status.OK).entity(result).build();
+        return response;
+    }
+
+    @Override
+    public Response reporteDebeHaberHistorialTotales(Long desde, Long hasta, TipoDebeHaber tipoDebeHaber,
+            BigInteger idMoneda) {
+        Date desdeReporte = new Date(desde);
+        Date hastaReporte = new Date(hasta);
+
+        List<DebeHaber> result = reportesServiceNT.getDebeHaberHistorialTotal(desdeReporte, hastaReporte,
+                idMoneda, tipoDebeHaber);
+        Response response = Response.status(Response.Status.OK).entity(result).build();
+        return response;
+    }
 }

@@ -24,4 +24,17 @@ public interface ReportesRest {
     @Produces({ "application/xml", "application/json" })
     public Response reporteDebeHaberPdf(@QueryParam("fecha") Long fecha);
 
+    @GET
+    @Path("/debeHaber/total")
+    @Produces({ "application/xml", "application/json" })
+    public Response reporteDebeHaberTotales(@QueryParam("fecha") Long fecha,
+            @QueryParam("tipo") TipoDebeHaber tipoDebeHaber, @QueryParam("idMoneda") BigInteger idMoneda);
+
+    @GET
+    @Path("/debeHaber/historial")
+    @Produces({ "application/xml", "application/json" })
+    public Response reporteDebeHaberHistorialTotales(@QueryParam("fecha") Long desde,
+            @QueryParam("fecha") Long hasta, @QueryParam("tipo") TipoDebeHaber tipoDebeHaber,
+            @QueryParam("idMoneda") BigInteger idMoneda);
+
 }
