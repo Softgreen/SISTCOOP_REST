@@ -2,6 +2,7 @@ package org.sistemafinanciero.controller;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,7 +13,6 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 import org.sistemafinanciero.dao.DAO;
 import org.sistemafinanciero.dao.QueryParameter;
@@ -69,14 +69,31 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
         query.setParameter("desde", desde);
         query.setParameter("hasta", hasta);
 
-        return (BigDecimal) query.getSingleResult();        
+        return (BigDecimal) query.getSingleResult();
     }
 
     @Override
     public List<DebeHaber> getDebeHaberHistorialTotal(Date desdeReporte, Date hastaReporte,
             BigInteger idMoneda, TipoDebeHaber tipoDebeHaber) {
-        // TODO Auto-generated method stub
-        return null;
+        Date desde = DateUtils.getDateIn00Time(desdeReporte);
+        Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(hastaReporte, 1));
+
+        Query query = em.getEm().createQuery(
+                ("SELECT dh.fecha, SUM(dh.monto) FROM DebeHaber dh WHERE dh.idMoneda =:idMoneda AND dh.tipo =:tipo AND dh.fecha BETWEEN :desde AND :hasta GROUP BY dh.fecha ORDER BY dh.fecha"));
+        query.setParameter("idMoneda", idMoneda);
+        query.setParameter("tipo", tipoDebeHaber);
+        query.setParameter("desde", desde);
+        query.setParameter("hasta", hasta);
+
+        List<Object[]> rows = query.getResultList();
+        List<DebeHaber> result = new ArrayList<>(rows.size());
+        for (Object[] row : rows) {
+            DebeHaber debeHaber = new DebeHaber();
+            debeHaber.setFecha((Date) row[0]);
+            debeHaber.setMonto((BigDecimal) row[1]);
+            result.add(debeHaber);
+        }
+        return result;
     }
 
 }

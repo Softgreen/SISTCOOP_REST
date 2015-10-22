@@ -33,8 +33,8 @@ public interface ReportesRest {
     @GET
     @Path("/debeHaber/historial")
     @Produces({ "application/xml", "application/json" })
-    public Response reporteDebeHaberHistorialTotales(@QueryParam("fecha") Long desde,
-            @QueryParam("fecha") Long hasta, @QueryParam("tipo") TipoDebeHaber tipoDebeHaber,
+    public Response reporteDebeHaberHistorialTotales(@QueryParam("desde") Long desde,
+            @QueryParam("hasta") Long hasta, @QueryParam("tipo") TipoDebeHaber tipoDebeHaber,
             @QueryParam("idMoneda") BigInteger idMoneda);
 
 }
