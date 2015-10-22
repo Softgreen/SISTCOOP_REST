@@ -3,6 +3,7 @@ package org.sistemafinanciero.controller;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -85,15 +86,42 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
         query.setParameter("desde", desde);
         query.setParameter("hasta", hasta);
 
+        // Resultados de la base de datos
         List<Object[]> rows = query.getResultList();
-        List<DebeHaber> result = new ArrayList<>(rows.size());
+        List<DebeHaber> dbResult = new ArrayList<>(rows.size());
         for (Object[] row : rows) {
             DebeHaber debeHaber = new DebeHaber();
             debeHaber.setFecha((Date) row[0]);
             debeHaber.setMonto((BigDecimal) row[1]);
-            result.add(debeHaber);
+            dbResult.add(debeHaber);
         }
-        return result;
+
+        // Poner a cero todos los que no existen
+        Calendar start = Calendar.getInstance();
+        start.setTime(desde);
+        Calendar end = Calendar.getInstance();
+        end.setTime(hasta);
+        List<DebeHaber> allDates = new ArrayList<>();
+        for (Date date = start.getTime(); start.before(end); start.add(Calendar.DATE,
+                1), date = start.getTime()) {
+            DebeHaber debeHaber = new DebeHaber();
+            debeHaber.setFecha(date);
+            debeHaber.setMonto(BigDecimal.ZERO);
+            allDates.add(debeHaber);
+        }
+
+        // Unir ambas listas
+        for (DebeHaber debeHaber : allDates) {
+            for (DebeHaber debeHaberBD : dbResult) {
+                if (DateUtils.getDateIn00Time(debeHaber.getFecha())
+                        .compareTo(DateUtils.getDateIn00Time(debeHaberBD.getFecha())) == 0) {
+                    debeHaber.setMonto(debeHaberBD.getMonto());
+                    break;
+                }
+            }
+        }
+
+        return allDates;
     }
 
 }
