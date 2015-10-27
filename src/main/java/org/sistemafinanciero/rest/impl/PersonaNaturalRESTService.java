@@ -245,4 +245,99 @@ public class PersonaNaturalRESTService implements PersonaNaturalREST {
 		fop.flush();
 		fop.close();
 	}
+
+    @Override
+    public Response setFoto(BigInteger id, MultipartFormDataInput input) {
+        PersonaNatural model = personaNaturalServiceNT.findById(id);
+        String fileName = id.toString();
+        
+        Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
+        List<InputPart> inputParts = uploadForm.get("file");
+        for (InputPart inputPart : inputParts) {
+            try {
+                // convert the uploaded file to inputstream
+                InputStream inputStream = inputPart.getBody(InputStream.class, null);
+                byte[] bytes = IOUtils.toByteArray(inputStream);          
+                
+                // constructs upload file path                
+                fileName = UPLOADED_FOTO_PATH + fileName;
+                writeFile(bytes, fileName);                
+               
+                //Actualizar persona
+                model.setUrlFoto(fileName);
+                model.setIdPersonaNatural(null);
+                personaNaturalServiceTS.update(id, model);               
+            } catch (IOException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Internal error").build();
+            } catch (NonexistentEntityException e) {
+                Jsend jsend = Jsend.getErrorJSend(e.getMessage());
+                return Response.status(Response.Status.NOT_FOUND).entity(jsend).build();
+            } catch (PreexistingEntityException e) {
+                Jsend jsend = Jsend.getErrorJSend(e.getMessage());
+                return Response.status(Response.Status.CONFLICT).entity(jsend).build();
+            } catch (RollbackFailureException e) {
+                Jsend jsend = Jsend.getErrorJSend(e.getMessage());
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsend).build();
+            }                     
+        }
+        return Response.status(200).entity("uploadFile is called, Uploaded file name : " + fileName).build();
+    }
+
+    @Override
+    public Response setFirma(BigInteger id, MultipartFormDataInput input) {
+        PersonaNatural model = personaNaturalServiceNT.findById(id);
+        String fileName = id.toString();
+        
+        Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
+        List<InputPart> inputParts = uploadForm.get("file");
+        for (InputPart inputPart : inputParts) {
+            try {
+                // convert the uploaded file to inputstream
+                InputStream inputStream = inputPart.getBody(InputStream.class, null);
+                byte[] bytes = IOUtils.toByteArray(inputStream);          
+                
+                // constructs upload file path                
+                fileName = UPLOADED_FIRMA_PATH + fileName;
+                writeFile(bytes, fileName);                
+               
+                //Actualizar persona
+                model.setUrlFirma(fileName);
+                model.setIdPersonaNatural(null);
+                personaNaturalServiceTS.update(id, model);               
+            } catch (IOException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Internal error").build();
+            } catch (NonexistentEntityException e) {
+                Jsend jsend = Jsend.getErrorJSend(e.getMessage());
+                return Response.status(Response.Status.NOT_FOUND).entity(jsend).build();
+            } catch (PreexistingEntityException e) {
+                Jsend jsend = Jsend.getErrorJSend(e.getMessage());
+                return Response.status(Response.Status.CONFLICT).entity(jsend).build();
+            } catch (RollbackFailureException e) {
+                Jsend jsend = Jsend.getErrorJSend(e.getMessage());
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsend).build();
+            }                     
+        }
+        return Response.status(200).entity("uploadFile is called, Uploaded file name : " + fileName).build();
+    }
+
+    @Override
+    public Response getFotoV2(String id) {
+        File file = new File(this.UPLOADED_FOTO_PATH + id);
+        if (!file.exists())
+            file = new File(this.UPLOADED_FOTO_PATH + "default.gif");
+        ResponseBuilder response = Response.status(Response.Status.OK).entity((Object) file);
+        response.header("Content-Disposition", "attachment; filename=image" + id + ".png");
+        return response.build();
+    }
+
+    @Override
+    public Response getFirmaV2(String id) {
+        File file = new File(this.UPLOADED_FIRMA_PATH + id);
+        if (!file.exists())
+            file = new File(this.UPLOADED_FIRMA_PATH + "default.gif");
+        ResponseBuilder response = Response.status(Response.Status.OK).entity((Object) file);
+        response.header("Content-Disposition", "attachment; filename=image" + id + ".png");
+        return response.build();
+    }
+    
 }

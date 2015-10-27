@@ -79,5 +79,27 @@ public interface PersonaNaturalREST {
 	@Path("/{id}/foto")
 	@Consumes("multipart/form-data")
 	public Response uploadFoto(@PathParam("id") BigInteger id, MultipartFormDataInput input);
+	
+	/**
+	 * Almacenar foto segun la segunda version*/
+	@POST
+    @Path("/{id}/fotoV2")
+    @Consumes("multipart/form-data")
+    public Response setFoto(@PathParam("id") BigInteger id, MultipartFormDataInput input);
 
+    @POST
+    @Path("/{id}/firmaV2")
+    @Consumes("multipart/form-data")
+    public Response setFirma(@PathParam("id") BigInteger id, MultipartFormDataInput input);
+        
+    @GET
+    @Path("/{id}/fotoV2")
+    @Produces("image/png")
+    public Response getFotoV2(@PathParam("id") String id);
+
+    @GET
+    @Path("/{id}/firmaV2")
+    @Produces("image/png")
+    public Response getFirmaV2(@PathParam("id") String id);
+    
 }
