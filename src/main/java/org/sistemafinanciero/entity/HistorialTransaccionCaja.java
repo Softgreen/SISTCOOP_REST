@@ -18,7 +18,7 @@ import java.util.Date;
 @Table(name = "HISTORIAL_TRANSACCION_CAJA")
 @XmlRootElement(name = "moneda")
 @XmlAccessorType(XmlAccessType.NONE)
-@NamedQueries({ @NamedQuery(name = HistorialTransaccionCaja.findByHistorialCaja, query = "SELECT h FROM HistorialTransaccionCaja h WHERE h.idHistorialCaja = :idHistorialCaja ORDER BY h.numeroOperacion"), 
+@NamedQueries({ @NamedQuery(name = HistorialTransaccionCaja.findByHistorialCaja, query = "SELECT h FROM HistorialTransaccionCaja h WHERE h.idHistorialCaja = :idHistorialCaja ORDER BY h.numeroOperacion DESC"), 
 				@NamedQuery(name = HistorialTransaccionCaja.findByTransaccion, query = "SELECT h from HistorialTransaccionCaja h where h.idHistorialCaja = :idHistorialCaja AND (TRIM(h.idTransaccion) like :filterText or TRIM(h.numeroOperacion) like :filterText) order by h.idTransaccion") })
 public class HistorialTransaccionCaja implements Serializable {
 
