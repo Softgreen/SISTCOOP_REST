@@ -34,7 +34,7 @@ public class UsuarioRESTService implements UsuarioREST {
 		if (result == true)
 			return Response.status(Response.Status.NO_CONTENT).build();
 		else
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			return Response.status(Response.Status.BAD_REQUEST).build();
 	}
 
 }
