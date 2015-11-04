@@ -18,251 +18,261 @@ import org.sistemafinanciero.entity.type.Tipotransaccionbancaria;
 @XmlAccessorType(XmlAccessType.NONE)
 public class VoucherTransaccionBancaria implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	@XmlElement
-	private BigInteger idTransaccionBancaria;
-	
-	@XmlElement
-	private Moneda moneda;
-	
-	@XmlElement
-	private TipoCuentaBancaria tipoCuentaBancaria;
-	
-	@XmlElement
-	private String numeroCuenta;
-	
-	@XmlElement
-	private Date fecha;
-	
-	@XmlElement
-	private Date hora;
-	
-	@XmlElement
-	private BigInteger numeroOperacion;
-	
-	@XmlElement
-	private BigDecimal monto;
-	
-	@XmlElement
-	private String referencia;
-	
-	@XmlElement
-	private BigDecimal saldoDisponible;
-	
-	@XmlElement
+    @XmlElement
+    private BigInteger idTransaccionBancaria;
+
+    @XmlElement
+    private Moneda moneda;
+
+    @XmlElement
+    private TipoCuentaBancaria tipoCuentaBancaria;
+
+    @XmlElement
+    private String numeroCuenta;
+
+    @XmlElement
+    private Date fecha;
+
+    @XmlElement
+    private Date hora;
+
+    @XmlElement
+    private BigInteger numeroOperacion;
+
+    @XmlElement
+    private BigDecimal monto;
+
+    @XmlElement
+    private String referencia;
+
+    @XmlElement
+    private BigDecimal saldoDisponible;
+
+    @XmlElement
     private BigDecimal interes;
-	
-	@XmlElement
-	private Tipotransaccionbancaria tipoTransaccion;
-	
-	@XmlElement
-	private String observacion;
 
-	@XmlElement
-	private String agenciaAbreviatura;
-	
-	@XmlElement
-	private String agenciaDenominacion;
-	
-	@XmlElement
-	private String cajaDenominacion;
-	
-	@XmlElement
-	private String cajaAbreviatura;
+    @XmlElement
+    private Tipotransaccionbancaria tipoTransaccion;
 
-	@XmlElement
-	private BigInteger idSocio;
-	
-	@XmlElement
-	private TipoDocumento tipoDocumento;
-	
-	@XmlElement
-	private String numeroDocumento;
-	
-	@XmlElement
-	private String socio;
+    @XmlElement
+    private String observacion;
 
-	
-	@XmlElement
-	private String titulares;
-	
-	public BigInteger getIdTransaccionBancaria() {
-		return idTransaccionBancaria;
-	}
+    @XmlElement
+    private String agenciaAbreviatura;
 
-	public void setIdTransaccionBancaria(BigInteger idTransaccionBancaria) {
-		this.idTransaccionBancaria = idTransaccionBancaria;
-	}
+    @XmlElement
+    private String agenciaDenominacion;
 
-	public Moneda getMoneda() {
-		return moneda;
-	}
+    @XmlElement
+    private String cajaDenominacion;
 
-	public void setMoneda(Moneda moneda) {
-		this.moneda = moneda;
-	}
+    @XmlElement
+    private String cajaAbreviatura;
 
-	public TipoCuentaBancaria getTipoCuentaBancaria() {
-		return tipoCuentaBancaria;
-	}
+    @XmlElement
+    private BigInteger idSocio;
 
-	public void setTipoCuentaBancaria(TipoCuentaBancaria tipoCuentaBancaria) {
-		this.tipoCuentaBancaria = tipoCuentaBancaria;
-	}
+    @XmlElement
+    private TipoDocumento tipoDocumento;
 
-	public String getNumeroCuenta() {
-		return numeroCuenta;
-	}
+    @XmlElement
+    private String numeroDocumento;
 
-	public void setNumeroCuenta(String numeroCuenta) {
-		this.numeroCuenta = numeroCuenta;
-	}
+    @XmlElement
+    private String socio;
 
-	public Date getFecha() {
-		return fecha;
-	}
+    @XmlElement
+    private String titulares;
+    
+    @XmlElement
+    private boolean estado;
 
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
-	}
+    public BigInteger getIdTransaccionBancaria() {
+        return idTransaccionBancaria;
+    }
 
-	public Date getHora() {
-		return hora;
-	}
+    public void setIdTransaccionBancaria(BigInteger idTransaccionBancaria) {
+        this.idTransaccionBancaria = idTransaccionBancaria;
+    }
 
-	public void setHora(Date hora) {
-		this.hora = hora;
-	}
+    public Moneda getMoneda() {
+        return moneda;
+    }
 
-	public BigInteger getNumeroOperacion() {
-		return numeroOperacion;
-	}
+    public void setMoneda(Moneda moneda) {
+        this.moneda = moneda;
+    }
 
-	public void setNumeroOperacion(BigInteger numeroOperacion) {
-		this.numeroOperacion = numeroOperacion;
-	}
+    public TipoCuentaBancaria getTipoCuentaBancaria() {
+        return tipoCuentaBancaria;
+    }
 
-	public BigDecimal getMonto() {
-		return monto;
-	}
+    public void setTipoCuentaBancaria(TipoCuentaBancaria tipoCuentaBancaria) {
+        this.tipoCuentaBancaria = tipoCuentaBancaria;
+    }
 
-	public void setMonto(BigDecimal monto) {
-		this.monto = monto;
-	}
+    public String getNumeroCuenta() {
+        return numeroCuenta;
+    }
 
-	public String getReferencia() {
-		return referencia;
-	}
+    public void setNumeroCuenta(String numeroCuenta) {
+        this.numeroCuenta = numeroCuenta;
+    }
 
-	public void setReferencia(String referencia) {
-		this.referencia = referencia;
-	}
+    public Date getFecha() {
+        return fecha;
+    }
 
-	public BigDecimal getSaldoDisponible() {
-		return saldoDisponible;
-	}
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
 
-	public void setSaldoDisponible(BigDecimal saldoDisponible) {
-		this.saldoDisponible = saldoDisponible;
-	}
+    public Date getHora() {
+        return hora;
+    }
 
-	public BigDecimal getInteres() {
+    public void setHora(Date hora) {
+        this.hora = hora;
+    }
+
+    public BigInteger getNumeroOperacion() {
+        return numeroOperacion;
+    }
+
+    public void setNumeroOperacion(BigInteger numeroOperacion) {
+        this.numeroOperacion = numeroOperacion;
+    }
+
+    public BigDecimal getMonto() {
+        return monto;
+    }
+
+    public void setMonto(BigDecimal monto) {
+        this.monto = monto;
+    }
+
+    public String getReferencia() {
+        return referencia;
+    }
+
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
+    }
+
+    public BigDecimal getSaldoDisponible() {
+        return saldoDisponible;
+    }
+
+    public void setSaldoDisponible(BigDecimal saldoDisponible) {
+        this.saldoDisponible = saldoDisponible;
+    }
+
+    public BigDecimal getInteres() {
         return interes;
     }
 
     public void setInteres(BigDecimal interes) {
         this.interes = interes;
     }
-    
-	public Tipotransaccionbancaria getTipoTransaccion() {
-		return tipoTransaccion;
-	}
 
-	public void setTipoTransaccion(Tipotransaccionbancaria tipoTransaccion) {
-		this.tipoTransaccion = tipoTransaccion;
-	}
+    public Tipotransaccionbancaria getTipoTransaccion() {
+        return tipoTransaccion;
+    }
 
-	public String getObservacion() {
-		return observacion;
-	}
+    public void setTipoTransaccion(Tipotransaccionbancaria tipoTransaccion) {
+        this.tipoTransaccion = tipoTransaccion;
+    }
 
-	public void setObservacion(String observacion) {
-		this.observacion = observacion;
-	}
+    public String getObservacion() {
+        return observacion;
+    }
 
-	public String getAgenciaAbreviatura() {
-		return agenciaAbreviatura;
-	}
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
+    }
 
-	public void setAgenciaAbreviatura(String agenciaAbreviatura) {
-		this.agenciaAbreviatura = agenciaAbreviatura;
-	}
+    public String getAgenciaAbreviatura() {
+        return agenciaAbreviatura;
+    }
 
-	public String getAgenciaDenominacion() {
-		return agenciaDenominacion;
-	}
+    public void setAgenciaAbreviatura(String agenciaAbreviatura) {
+        this.agenciaAbreviatura = agenciaAbreviatura;
+    }
 
-	public void setAgenciaDenominacion(String agenciaDenominacion) {
-		this.agenciaDenominacion = agenciaDenominacion;
-	}
+    public String getAgenciaDenominacion() {
+        return agenciaDenominacion;
+    }
 
-	public String getCajaDenominacion() {
-		return cajaDenominacion;
-	}
+    public void setAgenciaDenominacion(String agenciaDenominacion) {
+        this.agenciaDenominacion = agenciaDenominacion;
+    }
 
-	public void setCajaDenominacion(String cajaDenominacion) {
-		this.cajaDenominacion = cajaDenominacion;
-	}
+    public String getCajaDenominacion() {
+        return cajaDenominacion;
+    }
 
-	public String getCajaAbreviatura() {
-		return cajaAbreviatura;
-	}
+    public void setCajaDenominacion(String cajaDenominacion) {
+        this.cajaDenominacion = cajaDenominacion;
+    }
 
-	public void setCajaAbreviatura(String cajaAbreviatura) {
-		this.cajaAbreviatura = cajaAbreviatura;
-	}
+    public String getCajaAbreviatura() {
+        return cajaAbreviatura;
+    }
 
-	public BigInteger getIdSocio() {
-		return idSocio;
-	}
+    public void setCajaAbreviatura(String cajaAbreviatura) {
+        this.cajaAbreviatura = cajaAbreviatura;
+    }
 
-	public void setIdSocio(BigInteger idSocio) {
-		this.idSocio = idSocio;
-	}
+    public BigInteger getIdSocio() {
+        return idSocio;
+    }
 
-	public TipoDocumento getTipoDocumento() {
-		return tipoDocumento;
-	}
+    public void setIdSocio(BigInteger idSocio) {
+        this.idSocio = idSocio;
+    }
 
-	public void setTipoDocumento(TipoDocumento tipoDocumento) {
-		this.tipoDocumento = tipoDocumento;
-	}
+    public TipoDocumento getTipoDocumento() {
+        return tipoDocumento;
+    }
 
-	public String getNumeroDocumento() {
-		return numeroDocumento;
-	}
+    public void setTipoDocumento(TipoDocumento tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
+    }
 
-	public void setNumeroDocumento(String numeroDocumento) {
-		this.numeroDocumento = numeroDocumento;
-	}
+    public String getNumeroDocumento() {
+        return numeroDocumento;
+    }
 
-	public String getSocio() {
-		return socio;
-	}
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
+    }
 
-	public void setSocio(String socio) {
-		this.socio = socio;
-	}
+    public String getSocio() {
+        return socio;
+    }
 
-	public String getTitulares() {
-		return titulares;
-	}
+    public void setSocio(String socio) {
+        this.socio = socio;
+    }
 
-	public void setTitulares(String titulares) {
-		this.titulares = titulares;
-	}
+    public String getTitulares() {
+        return titulares;
+    }
+
+    public void setTitulares(String titulares) {
+        this.titulares = titulares;
+    }
+
+    public boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
+    }
 }

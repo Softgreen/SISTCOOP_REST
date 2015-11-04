@@ -961,6 +961,7 @@ public class CajaServiceBeanNT implements CajaServiceNT {
         voucherTransaccion.setReferencia(transaccionBancaria.getReferencia());
         voucherTransaccion.setTipoTransaccion(transaccionBancaria.getTipoTransaccion());
         voucherTransaccion.setObservacion(transaccionBancaria.getObservacion());
+        voucherTransaccion.setEstado(transaccionBancaria.getEstado());
 
         // Poniendo datos de cuenta bancaria
         voucherTransaccion.setTipoCuentaBancaria(cuentaBancaria.getTipoCuentaBancaria());
