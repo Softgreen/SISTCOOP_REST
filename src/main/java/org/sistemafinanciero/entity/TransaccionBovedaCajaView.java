@@ -34,10 +34,10 @@ import org.sistemafinanciero.entity.type.TransaccionBovedaCajaOrigen;
 @XmlRootElement(name = "transaccionbovedacaja")
 @XmlAccessorType(XmlAccessType.NONE)
 @NamedQueries({
-		@NamedQuery(name = TransaccionBovedaCajaView.findByHistorialCajaEnviados, query = "SELECT c FROM TransaccionBovedaCajaView c WHERE c.idHistorialCaja = :idHistorialCaja AND c.origen = :origen"),
-		@NamedQuery(name = TransaccionBovedaCajaView.findByHistorialCajaRecibidos, query = "SELECT c FROM TransaccionBovedaCajaView c WHERE c.idHistorialCaja = :idHistorialCaja AND c.origen = :origen AND c.estadoConfirmacion = false AND c.estadoSolicitud = true"),
-		@NamedQuery(name = TransaccionBovedaCajaView.findByAgenciaBovedaEnviados, query = "SELECT c FROM TransaccionBovedaCajaView c WHERE c.idAgencia = :idAgencia AND c.origen = :origen"),
-		@NamedQuery(name = TransaccionBovedaCajaView.findByAgenciaBovedaRecibidos, query = "SELECT c FROM TransaccionBovedaCajaView c WHERE c.idAgencia = :idAgencia AND c.origen = :origen")})
+		@NamedQuery(name = TransaccionBovedaCajaView.findByHistorialCajaEnviados, query = "SELECT c FROM TransaccionBovedaCajaView c WHERE c.idHistorialCaja = :idHistorialCaja AND c.origen = :origen ORDER BY c.idTransaccionBovedaCaja DESC"),
+		@NamedQuery(name = TransaccionBovedaCajaView.findByHistorialCajaRecibidos, query = "SELECT c FROM TransaccionBovedaCajaView c WHERE c.idHistorialCaja = :idHistorialCaja AND c.origen = :origen AND c.estadoConfirmacion = false AND c.estadoSolicitud = true ORDER BY c.idTransaccionBovedaCaja DESC"),
+		@NamedQuery(name = TransaccionBovedaCajaView.findByAgenciaBovedaEnviados, query = "SELECT c FROM TransaccionBovedaCajaView c WHERE c.idAgencia = :idAgencia AND c.origen = :origen ORDER BY c.idTransaccionBovedaCaja DESC"),
+		@NamedQuery(name = TransaccionBovedaCajaView.findByAgenciaBovedaRecibidos, query = "SELECT c FROM TransaccionBovedaCajaView c WHERE c.idAgencia = :idAgencia AND c.origen = :origen ORDER BY c.idTransaccionBovedaCaja DESC")})
 public class TransaccionBovedaCajaView implements java.io.Serializable {
 
 	/**
