@@ -15,15 +15,15 @@ public class ReporteCajaBancosRestService implements ReporteCajaBancosRest {
     private ReporteCajaBancosServiceNT reportesCajaBancosServiceNT;
 
 	@Override
-	public Response reporteCaja(BigInteger idMoneda, BigInteger idAgencia) {
-		BigDecimal result = reportesCajaBancosServiceNT.getReporteCajaPorAgenciaMoneda(idMoneda, idAgencia);
+	public Response reporteCajaPorAgencias(BigInteger idMoneda, BigInteger idAgencia) {
+		BigDecimal result = reportesCajaBancosServiceNT.getReporteCajaPorAgencia(idMoneda, idAgencia);
 		Response response = Response.status(Response.Status.OK).entity(result).build();
 		return response;
 	}
 
 	@Override
-	public Response reporteBancos(BigInteger idMoneda, BigInteger idAgencia) {
-		BigDecimal result = reportesCajaBancosServiceNT.getReporteBancosPorAgenciaMoneda(idMoneda, idAgencia);
+	public Response reporteTotalCaja(BigInteger idMoneda) {
+		BigDecimal result = reportesCajaBancosServiceNT.getReporteTotalCaja(idMoneda);
 		Response response = Response.status(Response.Status.OK).entity(result).build();
 		return response;
 	}

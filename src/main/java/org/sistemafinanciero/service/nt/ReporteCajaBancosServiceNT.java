@@ -7,9 +7,9 @@ import javax.ejb.Remote;
 @Remote
 public interface ReporteCajaBancosServiceNT {
 
-    public BigDecimal getReporteCajaPorAgenciaMoneda(BigInteger idMoneda, BigInteger idAgencia);
-    
-    public BigDecimal getReporteBancosPorAgenciaMoneda(BigInteger idMoneda, BigInteger idAgencia);
+    public BigDecimal getReporteCajaPorAgencia(BigInteger idMoneda, BigInteger idAgencia);
+
+	public BigDecimal getReporteTotalCaja(BigInteger idMoneda);
 	
 	//public List<DebeHaber> getDebeHaber(Date fecha, BigInteger idMoneda, TipoDebeHaber tipoDebeHaber);
 

@@ -8,20 +8,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-@Path("/reportes")
+@Path("/reporteCajaBancos")
 public interface ReporteCajaBancosRest {
 
 	@GET
-    @Path("/reporteCaja")
+    @Path("/montoCajaPorAgencias")
     @Produces({ "application/xml", "application/json" })
-    public Response reporteCaja(@QueryParam("idMoneda") BigInteger idMoneda,
-            @QueryParam("idAgencia") BigInteger idAgencia);
+    public Response reporteCajaPorAgencias(@QueryParam("idmoneda") BigInteger idMoneda,
+            @QueryParam("idagencia") BigInteger idAgencia);
 	
 	@GET
-    @Path("/reporteBancos")
+    @Path("/montoTotalCaja")
     @Produces({ "application/xml", "application/json" })
-    public Response reporteBancos(@QueryParam("idMoneda") BigInteger idMoneda,
-            @QueryParam("idAgencia") BigInteger idAgencia);
+    public Response reporteTotalCaja(@QueryParam("idmoneda") BigInteger idMoneda);
 	
 	/*
     @GET

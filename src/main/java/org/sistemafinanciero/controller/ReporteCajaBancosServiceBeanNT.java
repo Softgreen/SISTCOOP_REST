@@ -24,20 +24,41 @@ public class ReporteCajaBancosServiceBeanNT implements ReporteCajaBancosServiceN
     private EntityManagerProducer em;
 	
 	@Override
-	public BigDecimal getReporteCajaPorAgenciaMoneda(BigInteger idMoneda, BigInteger idAgencia) {
-		Query query = em.getEm().createQuery("SELECT sum(DISTINCT bc.saldo) + sum(DISTINCT dhb.cantidad*md.valor) FROM BOVEDA_CAJA bc INNER JOIN bc.boveda b INNER JOIN b.historial_boveda hb INNER JOIN hb.detalle_hitorial_boveda dhb INNER JOIN dhb.moneda_denominacion md WHERE d.id_agencia = :idagencia and b.id_moneda = :idmoneda and hb.estado = :estado");
-		query.setParameter("idmoneda", idMoneda);
-		query.setParameter("idagencia", idAgencia);
-		query.setParameter("estado", 1);
+	public BigDecimal getReporteCajaPorAgencia(BigInteger idMoneda, BigInteger idAgencia) {
+		Query queryBoveda = em.getEm().createQuery("select sum(dhb.cantidad * md.valor) from DetalleHistorialBoveda dhb inner join dhb.historialBoveda hb inner join hb.boveda b inner join b.agencia a inner join b.moneda m inner join dhb.monedaDenominacion md where a.idAgencia = :idagencia and m.idMoneda = :idmoneda and hb.estado = :estado");
+		queryBoveda.setParameter("idmoneda", idMoneda);
+		queryBoveda.setParameter("idagencia", idAgencia);
+		queryBoveda.setParameter("estado", true);
 		
-		return (BigDecimal) query.getSingleResult();
+		Query queryCaja = em.getEm().createQuery("select sum(bc.saldo) from BovedaCaja bc inner join bc.boveda b inner join b.moneda m inner join b.agencia a where a.idAgencia = :idagencia and m.idMoneda = :idmoneda");
+		queryCaja.setParameter("idmoneda", idMoneda);
+		queryCaja.setParameter("idagencia", idAgencia);
+		
+		BigDecimal montoBovedas = (BigDecimal) queryBoveda.getSingleResult();
+		BigDecimal montoCajas = (BigDecimal) queryCaja.getSingleResult();
+		
+		BigDecimal montoBovedasCajas = montoBovedas.add(montoCajas);
+		
+		return montoBovedasCajas;
 	}
 
 	@Override
-	public BigDecimal getReporteBancosPorAgenciaMoneda(BigInteger idMoneda,
-			BigInteger idAgencia) {
-		// TODO Auto-generated method stub
-		return null;
+	public BigDecimal getReporteTotalCaja(BigInteger idMoneda) {
+		Query queryBovedas = em.getEm().createQuery("select sum(dhb.cantidad * md.valor) from DetalleHistorialBoveda dhb inner join dhb.historialBoveda hb inner join hb.boveda b inner join b.moneda m inner join dhb.monedaDenominacion md where m.idMoneda = :idmoneda and hb.estado = :estado");
+		queryBovedas.setParameter("idmoneda", idMoneda);
+		queryBovedas.setParameter("estado", true);
+		
+		Query queryCajas = em.getEm().createQuery("select sum(bc.saldo) from BovedaCaja bc inner join bc.boveda b inner join b.moneda m where m.idMoneda = :idmoneda");
+		queryCajas.setParameter("idmoneda", idMoneda);
+		
+		BigDecimal montoBovedas = (BigDecimal) queryBovedas.getSingleResult();
+		BigDecimal montoCajas = (BigDecimal) queryCajas.getSingleResult();
+		
+		BigDecimal montoBovedasCajas = montoBovedas.add(montoCajas);
+		
+		
+		
+		return montoBovedasCajas;
 	}
 
     
