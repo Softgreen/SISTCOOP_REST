@@ -56,7 +56,7 @@ public class ReporteCajaBancosServiceBeanNT implements ReporteCajaBancosServiceN
 		
 		BigDecimal montoBovedasCajas = montoBovedas.add(montoCajas);
 		
-		
+		System.out.println("monto caja: " + montoCajas + "// monto bovedas: " + montoBovedas);
 		
 		return montoBovedasCajas;
 	}
