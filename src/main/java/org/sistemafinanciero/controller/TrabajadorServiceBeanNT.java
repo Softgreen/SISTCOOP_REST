@@ -140,4 +140,32 @@ public class TrabajadorServiceBeanNT implements TrabajadorServiceNT {
 		return list;
 	}
 
+	@Override
+	public Trabajador find(BigInteger idTipoDocumento, String numeroDocumento) {
+		if (idTipoDocumento == null || numeroDocumento == null)
+			return null;
+
+		numeroDocumento = numeroDocumento.trim();
+		if (numeroDocumento.isEmpty())
+			return null;
+
+		Trabajador result = null;
+		try {
+			QueryParameter queryParameter = QueryParameter.with("idTipoDocumento", idTipoDocumento).and("numeroDocumento", numeroDocumento);
+			List<Trabajador> list = trabajadorDAO.findByNamedQuery(Trabajador.FindByTipoAndNumeroDocumento, queryParameter.parameters());
+			if (list.size() > 1)
+				throw new IllegalResultException("Se encontró mas de un trabajador con idDocumento:" + idTipoDocumento + " y numero de documento:" + numeroDocumento);
+			else
+				for (Trabajador trabajador : list) {
+					result = trabajador;
+					PersonaNatural persona = result.getPersonaNatural();
+					TipoDocumento tipoDocumento = persona.getTipoDocumento();
+					Hibernate.initialize(tipoDocumento);
+				}
+		} catch (IllegalResultException e) {
+			LOGGER.error(e.getMessage(), e.getLocalizedMessage(), e.getCause());
+		}
+		return result;
+	}
+
 }

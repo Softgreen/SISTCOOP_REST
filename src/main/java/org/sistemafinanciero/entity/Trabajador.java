@@ -29,11 +29,13 @@ import com.sun.istack.NotNull;
  */
 @Entity
 @Table(name = "TRABAJADOR", schema = "C##BDSISTEMAFINANCIERO")
-@NamedQueries({ @NamedQuery(name = Trabajador.findByUsername, query = "SELECT t FROM Trabajador t WHERE t.usuario = :username"), 
-	@NamedQuery(name = Trabajador.findByFilterText, query = "SELECT t FROM Trabajador t INNER JOIN t.personaNatural p WHERE CONCAT(p.apellidoPaterno,' ', p.apellidoMaterno,' ',p.nombres) LIKE :filterText"), 
-	@NamedQuery(name = Trabajador.findByFilterTextAndIdAgencia, query = "SELECT t FROM Trabajador t INNER JOIN t.agencia a INNER JOIN t.personaNatural p WHERE a.idAgencia = :idAgencia AND CONCAT(p.apellidoPaterno,' ', p.apellidoMaterno,' ',p.nombres) LIKE :filterText"),
-	@NamedQuery(name = Trabajador.findByIdPersonaAndEstado, query = "SELECT t FROM Trabajador t INNER JOIN t.personaNatural p WHERE p.idPersonaNatural = :idPersonaNatural AND t.estado = :estado"),
-	@NamedQuery(name = Trabajador.findByUsuarioAndEstado, query = "SELECT t FROM Trabajador t WHERE t.usuario = :usuario AND t.estado = :estado ")})
+@NamedQueries({
+		@NamedQuery(name = Trabajador.findByUsername, query = "SELECT t FROM Trabajador t WHERE t.usuario = :username"),
+		@NamedQuery(name = Trabajador.findByFilterText, query = "SELECT t FROM Trabajador t INNER JOIN t.personaNatural p WHERE CONCAT(p.apellidoPaterno,' ', p.apellidoMaterno,' ',p.nombres) LIKE :filterText"),
+		@NamedQuery(name = Trabajador.findByFilterTextAndIdAgencia, query = "SELECT t FROM Trabajador t INNER JOIN t.agencia a INNER JOIN t.personaNatural p WHERE a.idAgencia = :idAgencia AND CONCAT(p.apellidoPaterno,' ', p.apellidoMaterno,' ',p.nombres) LIKE :filterText"),
+		@NamedQuery(name = Trabajador.findByIdPersonaAndEstado, query = "SELECT t FROM Trabajador t INNER JOIN t.personaNatural p WHERE p.idPersonaNatural = :idPersonaNatural AND t.estado = :estado"),
+		@NamedQuery(name = Trabajador.findByUsuarioAndEstado, query = "SELECT t FROM Trabajador t WHERE t.usuario = :usuario AND t.estado = :estado "),
+		@NamedQuery(name = Trabajador.FindByTipoAndNumeroDocumento, query = "SELECT t FROM Trabajador t INNER JOIN t.personaNatural p INNER JOIN p.tipoDocumento td WHERE td.idTipoDocumento = :idTipoDocumento AND p.numeroDocumento = :numeroDocumento ORDER BY p.apellidoPaterno, p.apellidoMaterno, p.nombres, p.idPersonaNatural") })
 public class Trabajador implements java.io.Serializable {
 
 	/**
@@ -46,6 +48,8 @@ public class Trabajador implements java.io.Serializable {
 	public final static String findByFilterTextAndIdAgencia = "Trabajador.findByFilterTextAndIdAgencia";
 	public final static String findByIdPersonaAndEstado = "Trabajador.findByIdPersonaAndEstado";
 	public final static String findByUsuarioAndEstado = "Trabajador.findByUsuarioAndEstado";
+
+	public final static String FindByTipoAndNumeroDocumento = "Trabajador.FindByTipoAndNumeroDocumento";
 
 	private BigInteger idTrabajador;
 	private PersonaNatural personaNatural;
@@ -64,7 +68,8 @@ public class Trabajador implements java.io.Serializable {
 		this.estado = estado;
 	}
 
-	public Trabajador(BigInteger idTrabajador, PersonaNatural personaNatural, Agencia agencia, int estado, Set trabajadorCajas) {
+	public Trabajador(BigInteger idTrabajador, PersonaNatural personaNatural, Agencia agencia, int estado,
+			Set trabajadorCajas) {
 		this.idTrabajador = idTrabajador;
 		this.personaNatural = personaNatural;
 		this.agencia = agencia;
@@ -72,10 +77,10 @@ public class Trabajador implements java.io.Serializable {
 		this.trabajadorCajas = trabajadorCajas;
 	}
 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="TRABAJADOR_SEQ")
-	@SequenceGenerator(name="TRABAJADOR_SEQ", initialValue=1, allocationSize=1, sequenceName="TRABAJADOR_SEQ")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRABAJADOR_SEQ")
+	@SequenceGenerator(name = "TRABAJADOR_SEQ", initialValue = 1, allocationSize = 1, sequenceName = "TRABAJADOR_SEQ")
 	@XmlElement(name = "id")
-	@Id	
+	@Id
 	@Column(name = "ID_TRABAJADOR", unique = true, nullable = false, precision = 22, scale = 0)
 	public BigInteger getIdTrabajador() {
 		return this.idTrabajador;

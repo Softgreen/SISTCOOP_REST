@@ -70,6 +70,13 @@ public class TrabajadorRESTService implements TrabajadorREST {
 	}
 
 	@Override
+	public Response findByTipoNumeroDocumento(BigInteger idTipoDocumento, String numeroDocumento) {
+		Trabajador trabajador = trabajadorServiceNT.find(idTipoDocumento, numeroDocumento);		
+		Response response = Response.status(Response.Status.OK).entity(trabajador).build();
+		return response;
+	}
+	
+	@Override
 	public Response create(TrabajadorDTO trabajadorDTO) {
 		Response response;
 
@@ -138,6 +145,6 @@ public class TrabajadorRESTService implements TrabajadorREST {
 			response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Jsend.getErrorJSend(e.getMessage())).build();
 		}
 		return response;
-	}
+	}	
 
 }

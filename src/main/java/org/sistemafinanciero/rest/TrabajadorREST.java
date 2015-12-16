@@ -2,6 +2,7 @@ package org.sistemafinanciero.rest;
 
 import java.math.BigInteger;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -24,6 +25,11 @@ public interface TrabajadorREST {
 	@Path("/{id}")
 	@Produces({ "application/xml", "application/json" })
 	public Response findById(@PathParam("id") BigInteger id);
+
+	@GET
+	@Path("/buscar")
+	@Produces({ "application/xml", "application/json" })
+	public Response findByTipoNumeroDocumento(@QueryParam("idTipoDocumento") @DefaultValue("-1") BigInteger idTipoDocumento, @QueryParam("numeroDocumento") @DefaultValue("") String numeroDocumento);
 
 	@POST
 	@Produces({ "application/xml", "application/json" })
