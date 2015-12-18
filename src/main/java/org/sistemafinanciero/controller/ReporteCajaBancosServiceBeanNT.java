@@ -34,20 +34,13 @@ public class ReporteCajaBancosServiceBeanNT implements ReporteCajaBancosServiceN
 		queryCaja.setParameter("idmoneda", idMoneda);
 		queryCaja.setParameter("idagencia", idAgencia);
 		
-		BigDecimal montoBovedas = (BigDecimal) queryBoveda.getSingleResult();
-		BigDecimal montoCajas = (BigDecimal) queryCaja.getSingleResult();
+		Object objBov = queryBoveda.getSingleResult();
+		Object objCaj = queryCaja.getSingleResult();
 		
-		if (montoBovedas == null) {
-			montoBovedas = new BigDecimal(0);
-		}
+		BigDecimal montoBovedas = objBov != null ? (BigDecimal) objBov : BigDecimal.ZERO;
+		BigDecimal montoCajas = objCaj != null ? (BigDecimal) objCaj : BigDecimal.ZERO;
 		
-		if (montoCajas == null) {
-			montoCajas = new BigDecimal(0);
-		}
-		
-		BigDecimal montoBovedasCajas = montoBovedas.add(montoCajas);
-		
-		return montoBovedasCajas;
+		return montoBovedas.add(montoCajas);
 	}
 
 	@Override
@@ -59,12 +52,13 @@ public class ReporteCajaBancosServiceBeanNT implements ReporteCajaBancosServiceN
 		Query queryCajas = em.getEm().createQuery("select sum(bc.saldo) from BovedaCaja bc inner join bc.boveda b inner join b.moneda m where m.idMoneda = :idmoneda");
 		queryCajas.setParameter("idmoneda", idMoneda);
 		
-		BigDecimal montoBovedas = (BigDecimal) queryBovedas.getSingleResult();
-		BigDecimal montoCajas = (BigDecimal) queryCajas.getSingleResult();
+		Object objBovedas = queryBovedas.getSingleResult();
+		Object objCajas = queryCajas.getSingleResult();
 		
-		BigDecimal montoBovedasCajas = montoBovedas.add(montoCajas);
+		BigDecimal montoBovedas = objBovedas != null ? (BigDecimal) objBovedas : BigDecimal.ZERO;
+		BigDecimal montoCajas = objCajas != null ? (BigDecimal) objCajas : BigDecimal.ZERO;
 		
-		return montoBovedasCajas;
+		return montoBovedas.add(montoCajas);
 	}
 
 	@Override
