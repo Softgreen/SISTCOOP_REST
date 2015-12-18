@@ -37,6 +37,14 @@ public class ReporteCajaBancosServiceBeanNT implements ReporteCajaBancosServiceN
 		BigDecimal montoBovedas = (BigDecimal) queryBoveda.getSingleResult();
 		BigDecimal montoCajas = (BigDecimal) queryCaja.getSingleResult();
 		
+		if (montoBovedas == null) {
+			montoBovedas = new BigDecimal(0);
+		}
+		
+		if (montoCajas == null) {
+			montoCajas = new BigDecimal(0);
+		}
+		
 		BigDecimal montoBovedasCajas = montoBovedas.add(montoCajas);
 		
 		return montoBovedasCajas;
@@ -59,57 +67,4 @@ public class ReporteCajaBancosServiceBeanNT implements ReporteCajaBancosServiceN
 		return montoBovedasCajas;
 	}
 
-    
-	/*
-	@Inject
-    private DAO<Object, DebeHaber> debeHaberDAO;
-
-    @Inject
-    private EntityManagerProducer em;
-    
-    @Override
-    public BigDecimal getDebeHaberTotal(Date fechaReporte, BigInteger idMoneda, TipoDebeHaber tipoDebeHaber) {
-        Date desde = DateUtils.getDateIn00Time(fechaReporte);
-        Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(fechaReporte, 1));
-
-        Query query = em.getEm().createQuery(
-                ("SELECT SUM(dh.monto) FROM DebeHaber dh WHERE dh.idMoneda =:idMoneda AND dh.tipo = :tipo AND dh.fecha BETWEEN :desde AND :hasta"));
-        query.setParameter("idMoneda", idMoneda);
-        query.setParameter("tipo", tipoDebeHaber);
-        query.setParameter("desde", desde);
-        query.setParameter("hasta", hasta);
-
-        return (BigDecimal) query.getSingleResult();        
-    }
-
-    @Override
-    public List<DebeHaber> getDebeHaber(Date fecha, BigInteger idMoneda, TipoDebeHaber tipoDebeHaber) {
-        if (fecha == null) {
-            return null;
-        }
-        QueryParameter queryParameter = QueryParameter.with("idMoneda", idMoneda).and("tipo", tipoDebeHaber)
-                .and("fecha", fecha);
-        List<DebeHaber> list = debeHaberDAO.findByNamedQuery(DebeHaber.findIdMonedaTipoFecha,
-                queryParameter.parameters());
-        return list;
-    }
-
-    @Override
-    public List<DebeHaber> getDebeHaber(Date fecha, TipoDebeHaber tipoDebeHaber) {
-        if (fecha == null) {
-            return null;
-        }
-        QueryParameter queryParameter = QueryParameter.with("tipo", tipoDebeHaber).and("fecha", fecha);
-        List<DebeHaber> list = debeHaberDAO.findByNamedQuery(DebeHaber.findTipoFecha,
-                queryParameter.parameters());
-        return list;
-    }
-
-    @Override
-    public List<DebeHaber> getDebeHaberHistorialTotal(Date desdeReporte, Date hastaReporte,
-            BigInteger idMoneda, TipoDebeHaber tipoDebeHaber) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-*/
 }
