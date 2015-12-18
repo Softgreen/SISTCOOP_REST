@@ -22,6 +22,11 @@ public interface ReporteCajaBancosRest {
     @Produces({ "application/xml", "application/json" })
     public Response reporteTotalCaja(@QueryParam("idmoneda") BigInteger idMoneda);
 	
+	@GET
+    @Path("/bancos")
+    @Produces({ "application/xml", "application/json" })
+    public Response getTotalBancos(@QueryParam("idMoneda") BigInteger idMoneda);
+	
 	/*
     @GET
     @Path("/debeHaber")

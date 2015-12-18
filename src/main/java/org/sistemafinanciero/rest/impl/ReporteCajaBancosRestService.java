@@ -28,8 +28,13 @@ public class ReporteCajaBancosRestService implements ReporteCajaBancosRest {
 		return response;
 	}
 
-    
-    
+	@Override
+	public Response getTotalBancos(BigInteger idMoneda) {
+		BigDecimal result = reportesCajaBancosServiceNT.getTotalBancos(idMoneda);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
+	}
+
 	/*
     @Override
     public Response reporteDebeHaberTotales(Long fecha, TipoDebeHaber tipoDebeHaber, BigInteger idMoneda) {

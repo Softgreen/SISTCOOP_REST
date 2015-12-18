@@ -21,7 +21,8 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Entity
 @Table(name = "TRANSACCION_BOVEDA_OTRO_VIEW", schema = "C##BDSISTEMAFINANCIERO")
-@NamedQueries({ @NamedQuery(name = TransaccionBovedaOtroView.findByIdAgencia, query = "SELECT t FROM TransaccionBovedaOtroView t WHERE t.idAgencia = :idAgencia ") })
+@NamedQueries({
+		@NamedQuery(name = TransaccionBovedaOtroView.findByIdAgencia, query = "SELECT t FROM TransaccionBovedaOtroView t WHERE t.idAgencia = :idAgencia ") })
 public class TransaccionBovedaOtroView implements java.io.Serializable {
 
 	/**
@@ -36,6 +37,7 @@ public class TransaccionBovedaOtroView implements java.io.Serializable {
 
 	private String entidad;
 	private String boveda;
+	private BigInteger idMoneda;
 
 	private Date fecha;
 	private Date hora;
@@ -138,6 +140,15 @@ public class TransaccionBovedaOtroView implements java.io.Serializable {
 
 	public void setIdAgencia(BigInteger idAgencia) {
 		this.idAgencia = idAgencia;
+	}
+
+	@Column(name = "ID_MONEDA", nullable = false)
+	public BigInteger getIdMoneda() {
+		return idMoneda;
+	}
+
+	public void setIdMoneda(BigInteger idMoneda) {
+		this.idMoneda = idMoneda;
 	}
 
 }

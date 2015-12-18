@@ -10,6 +10,8 @@ public interface ReporteCajaBancosServiceNT {
     public BigDecimal getReporteCajaPorAgencia(BigInteger idMoneda, BigInteger idAgencia);
 
 	public BigDecimal getReporteTotalCaja(BigInteger idMoneda);
+
+	public BigDecimal getTotalBancos(BigInteger idMoneda);
 	
 	//public List<DebeHaber> getDebeHaber(Date fecha, BigInteger idMoneda, TipoDebeHaber tipoDebeHaber);
 
