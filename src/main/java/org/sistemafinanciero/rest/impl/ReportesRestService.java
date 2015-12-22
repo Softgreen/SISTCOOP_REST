@@ -325,4 +325,57 @@ public class ReportesRestService implements ReportesRest {
         Response response = Response.status(Response.Status.OK).entity(result).build();
         return response;
     }
+
+	@Override
+	public Response reporteCuentasPorCobrar(BigInteger idMoneda, Long fecha) {
+		Date fechaReporte;
+        if (fecha == null) {
+            fechaReporte = Calendar.getInstance().getTime();
+        } else {
+            fechaReporte = new Date(fecha);
+        }
+        BigDecimal result = reportesServiceNT.getTotalCuentasPorCobrar(idMoneda, fechaReporte);
+        Response response = Response.status(Response.Status.OK).entity(result).build();
+        return response;
+	}
+
+	@Override
+	public Response reporteCuentasPorPagar(BigInteger idMoneda, Long fecha) {
+		Date fechaReporte;
+        if (fecha == null) {
+            fechaReporte = Calendar.getInstance().getTime();
+        } else {
+            fechaReporte = new Date(fecha);
+        }
+        BigDecimal result = reportesServiceNT.getTotalCuentasPorPagar(idMoneda, fechaReporte);
+        Response response = Response.status(Response.Status.OK).entity(result).build();
+        return response;
+	}
+	
+	@Override
+	public Response reportePatrimonio(BigInteger idMoneda, Long fecha) {
+		Date fechaReporte;
+        if (fecha == null) {
+            fechaReporte = Calendar.getInstance().getTime();
+        } else {
+            fechaReporte = new Date(fecha);
+        }
+        BigDecimal result = reportesServiceNT.getPatrimonio(idMoneda, fechaReporte);
+        Response response = Response.status(Response.Status.OK).entity(result).build();
+        return response;
+	}
+
+	@Override
+	public Response reporteUtilidad(BigInteger idMoneda, Long fecha) {
+		Date fechaReporte;
+        if (fecha == null) {
+            fechaReporte = Calendar.getInstance().getTime();
+        } else {
+            fechaReporte = new Date(fecha);
+        }
+        BigDecimal result = reportesServiceNT.getTotalUtilidad(idMoneda, fechaReporte);
+        Response response = Response.status(Response.Status.OK).entity(result).build();
+        return response;
+	}
+	
 }

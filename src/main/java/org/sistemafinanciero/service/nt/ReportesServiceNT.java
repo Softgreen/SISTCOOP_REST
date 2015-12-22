@@ -22,4 +22,12 @@ public interface ReportesServiceNT {
     public List<DebeHaber> getDebeHaberHistorialTotal(Date desdeReporte, Date hastaReporte,
             BigInteger idMoneda, TipoDebeHaber tipoDebeHaber);
 
+	public BigDecimal getTotalCuentasPorCobrar(BigInteger idMoneda, Date fechaReporte);
+
+	public BigDecimal getTotalCuentasPorPagar(BigInteger idMoneda, Date fechaReporte);
+
+	public BigDecimal getPatrimonio(BigInteger idMoneda, Date fechaReporte);
+	
+	public BigDecimal getTotalUtilidad(BigInteger idMoneda, Date fechaReporte);
+
 }
