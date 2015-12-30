@@ -188,22 +188,12 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 		BigDecimal utilidadEuros = getTotalUtilidadByMoneda(new BigInteger("2"), fechaReporte);
 
 		// Obteniendo tasas de conversion para calculo de utilidades
-		BigDecimal tasaVentaDolares = variableSistemaServiceNT.getTasaCambio(BigInteger.ONE, BigInteger.ZERO);
-		BigDecimal tasaVentaEuros = variableSistemaServiceNT.getTasaCambio(BigInteger.ONE, new BigInteger("2"));
-
-		System.out.println("utilidadSoles:" + utilidadSoles);
-		System.out.println("utilidadDolares:" + utilidadDolares);
-		System.out.println("utilidadEuros:" + utilidadEuros);
+		BigDecimal tasaVentaDolares = variableSistemaServiceNT.getTasaCambio(BigInteger.ZERO, BigInteger.ONE);
+		BigDecimal tasaVentaEuros = variableSistemaServiceNT.getTasaCambio(new BigInteger("2"), BigInteger.ONE);
 		
 		// Convertir
 		utilidadDolares = utilidadDolares.multiply(tasaVentaDolares);
 		utilidadEuros = utilidadEuros.multiply(tasaVentaEuros);
-
-		System.out.println("tasaVentaDolares:" + tasaVentaDolares);
-		System.out.println("tasaVentaEuros:" + tasaVentaEuros);
-		
-		System.out.println("utilidadDolares con interes:" + utilidadDolares);
-		System.out.println("utilidadEuros con interes:" + utilidadEuros);
 		
 		return utilidadSoles.add(utilidadDolares).add(utilidadEuros);
 	}
