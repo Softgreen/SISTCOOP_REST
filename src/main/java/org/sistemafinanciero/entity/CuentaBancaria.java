@@ -41,7 +41,9 @@ import org.sistemafinanciero.entity.type.TipoCuentaBancaria;
 @Table(name = "CUENTA_BANCARIA", schema = "C##BDSISTEMAFINANCIERO")
 @XmlRootElement(name = "cuentaBancaria")
 @XmlAccessorType(XmlAccessType.NONE)
-@NamedQueries({ @NamedQuery(name = CuentaBancaria.findByNumeroCuenta, query = "SELECT c FROM CuentaBancaria c WHERE c.numeroCuenta = :numerocuenta") })
+@NamedQueries({
+		@NamedQuery(name = CuentaBancaria.findByNumeroCuenta, query = "SELECT c FROM CuentaBancaria c WHERE c.numeroCuenta = :numerocuenta"),
+		@NamedQuery(name = CuentaBancaria.findByEstadoAndMoneda, query = "SELECT c FROM CuentaBancaria c INNER JOIN c.moneda m WHERE c.estado IN :estado AND m.idMoneda = :idMoneda") })
 public class CuentaBancaria implements java.io.Serializable {
 
 	/**
@@ -50,6 +52,7 @@ public class CuentaBancaria implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public final static String findByNumeroCuenta = "CuentaBancaria.findByNumeroCuenta";
+	public final static String findByEstadoAndMoneda = "CuentaBancaria.findByEstadoAndMoneda";
 
 	private BigInteger idCuentaBancaria;
 	private Socio socio;
@@ -64,8 +67,7 @@ public class CuentaBancaria implements java.io.Serializable {
 	private Set cuentaBancariaTasas = new HashSet(0);
 	private Set titulars = new HashSet(0);
 	private Set transferenciaBancariasForIdCuentaBancariaOrigen = new HashSet(0);
-	private Set transferenciaBancariasForIdCuentaBancariaDestino = new HashSet(
-			0);
+	private Set transferenciaBancariasForIdCuentaBancariaDestino = new HashSet(0);
 	private Set cuentaBancariaInteresGeneras = new HashSet(0);
 	private Set beneficiarios = new HashSet(0);
 	private Set transaccionBancarias = new HashSet(0);
@@ -73,9 +75,8 @@ public class CuentaBancaria implements java.io.Serializable {
 	public CuentaBancaria() {
 	}
 
-	public CuentaBancaria(BigInteger idCuentaBancaria, Socio socio,
-			TipoCuentaBancaria tipoCuentaBancaria, String numeroCuenta,
-			Date fechaApertura, BigDecimal saldo, int cantidadRetirantes,
+	public CuentaBancaria(BigInteger idCuentaBancaria, Socio socio, TipoCuentaBancaria tipoCuentaBancaria,
+			String numeroCuenta, Date fechaApertura, BigDecimal saldo, int cantidadRetirantes,
 			EstadoCuentaBancaria estado, String estadoCuenta) {
 		this.idCuentaBancaria = idCuentaBancaria;
 		this.socio = socio;
@@ -87,15 +88,11 @@ public class CuentaBancaria implements java.io.Serializable {
 		this.estado = estado;
 	}
 
-	public CuentaBancaria(BigInteger idCuentaBancaria, Socio socio,
-			TipoCuentaBancaria tipoCuentaBancaria, String numeroCuenta,
-			Date fechaApertura, Date fechaCierre, BigDecimal saldo,
-			int cantidadRetirantes, EstadoCuentaBancaria estado,
-			String estadoCuenta, Set cuentaBancariaTasas, Set titulars,
-			Set transferenciaBancariasForIdCuentaBancariaOrigen,
-			Set transferenciaBancariasForIdCuentaBancariaDestino,
-			Set cuentaBancariaInteresGeneras, Set beneficiarios,
-			Set transaccionBancarias) {
+	public CuentaBancaria(BigInteger idCuentaBancaria, Socio socio, TipoCuentaBancaria tipoCuentaBancaria,
+			String numeroCuenta, Date fechaApertura, Date fechaCierre, BigDecimal saldo, int cantidadRetirantes,
+			EstadoCuentaBancaria estado, String estadoCuenta, Set cuentaBancariaTasas, Set titulars,
+			Set transferenciaBancariasForIdCuentaBancariaOrigen, Set transferenciaBancariasForIdCuentaBancariaDestino,
+			Set cuentaBancariaInteresGeneras, Set beneficiarios, Set transaccionBancarias) {
 		this.idCuentaBancaria = idCuentaBancaria;
 		this.socio = socio;
 		this.tipoCuentaBancaria = tipoCuentaBancaria;
@@ -114,9 +111,9 @@ public class CuentaBancaria implements java.io.Serializable {
 		this.transaccionBancarias = transaccionBancarias;
 	}
 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="CUENTABANCARIA_SEQ")
-	@SequenceGenerator(name="CUENTABANCARIA_SEQ", initialValue=1, allocationSize=1, sequenceName="CUENTABANCARIA_SEQ")
-	@XmlElement(name = "id")	
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CUENTABANCARIA_SEQ")
+	@SequenceGenerator(name = "CUENTABANCARIA_SEQ", initialValue = 1, allocationSize = 1, sequenceName = "CUENTABANCARIA_SEQ")
+	@XmlElement(name = "id")
 	@Id
 	@Column(name = "ID_CUENTA_BANCARIA", unique = true, nullable = false, precision = 22, scale = 0)
 	public BigInteger getIdCuentaBancaria() {

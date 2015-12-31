@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -18,9 +19,17 @@ import javax.persistence.Query;
 
 import org.sistemafinanciero.dao.DAO;
 import org.sistemafinanciero.dao.QueryParameter;
+import org.sistemafinanciero.entity.CuentaBancaria;
 import org.sistemafinanciero.entity.CuentaBancariaView;
 import org.sistemafinanciero.entity.DebeHaber;
+import org.sistemafinanciero.entity.Moneda;
+import org.sistemafinanciero.entity.PersonaJuridica;
+import org.sistemafinanciero.entity.PersonaNatural;
+import org.sistemafinanciero.entity.Socio;
+import org.sistemafinanciero.entity.TipoDocumento;
+import org.sistemafinanciero.entity.type.EstadoCuentaBancaria;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
+import org.sistemafinanciero.entity.type.TipoPersona;
 import org.sistemafinanciero.service.nt.ReporteCajaBancosServiceNT;
 import org.sistemafinanciero.service.nt.ReportesServiceNT;
 import org.sistemafinanciero.service.nt.VariableSistemaServiceNT;
@@ -32,6 +41,9 @@ import org.sistemafinanciero.util.EntityManagerProducer;
 @Remote(ReportesServiceNT.class)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class ReportesServiceBeanNT implements ReportesServiceNT {
+
+	@Inject
+	private DAO<Object, CuentaBancaria> cuentaBancariaDAO;
 
 	@Inject
 	private DAO<Object, DebeHaber> debeHaberDAO;
@@ -47,14 +59,75 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 
 	@Override
 	public List<DebeHaber> getDebeHaber(Date fecha, BigInteger idMoneda, TipoDebeHaber tipoDebeHaber) {
-		if (fecha == null) {
-			return null;
+		if (fecha != null) {
+			QueryParameter queryParameter = QueryParameter.with("idMoneda", idMoneda).and("tipo", tipoDebeHaber)
+					.and("fecha", fecha);
+			List<DebeHaber> list = debeHaberDAO.findByNamedQuery(DebeHaber.findIdMonedaTipoFecha,
+					queryParameter.parameters());
+			return list;
+		} else {
+			List<EstadoCuentaBancaria> estados = new ArrayList<>();
+			estados.add(EstadoCuentaBancaria.ACTIVO);
+			estados.add(EstadoCuentaBancaria.CONGELADO);
+			QueryParameter queryParameter = QueryParameter.with("estado", estados).and("idMoneda", idMoneda);
+			List<CuentaBancaria> cuentasBancarias = cuentaBancariaDAO
+					.findByNamedQuery(CuentaBancaria.findByEstadoAndMoneda, queryParameter.parameters());
+
+			List<DebeHaber> list = new ArrayList<>();
+			Calendar calendar = Calendar.getInstance();
+			for (CuentaBancaria cta : cuentasBancarias) {
+				if (tipoDebeHaber.equals(TipoDebeHaber.DEBE)) {
+					if (cta.getSaldo().compareTo(BigDecimal.ZERO) < 0) {
+						break;
+					}
+				} else {
+					if (cta.getSaldo().compareTo(BigDecimal.ZERO) >= 0) {
+						break;
+					}
+				}
+
+				Moneda moneda = cta.getMoneda();
+
+				Socio socio = cta.getSocio();
+				PersonaNatural personaNatural = socio.getPersonaNatural();
+				PersonaJuridica personaJuridica = socio.getPersonaJuridica();
+				TipoDocumento tipoDocumento = personaNatural != null ? personaNatural.getTipoDocumento()
+						: personaJuridica.getTipoDocumento();
+				boolean isPersonaNatural = personaNatural != null ? true : false;
+
+				// Create obj
+				DebeHaber debeHaber = new DebeHaber();
+				debeHaber.setIdDebehaber(null);
+				debeHaber.setTipo(
+						cta.getSaldo().compareTo(BigDecimal.ZERO) >= 0 ? TipoDebeHaber.DEBE : TipoDebeHaber.HABER);
+
+				debeHaber.setNumeroCuenta(cta.getNumeroCuenta());
+
+				debeHaber.setIdMoneda(moneda.getIdMoneda());
+				debeHaber.setDenominacionMoneda(moneda.getDenominacion());
+				debeHaber.setSimboloMoneda(moneda.getSimbolo());
+				debeHaber.setMonto(cta.getSaldo());
+
+				debeHaber.setFecha(calendar.getTime());
+				debeHaber.setHora(calendar.getTime());
+
+				debeHaber.setTipoPersona(isPersonaNatural ? TipoPersona.NATURAL : TipoPersona.JURIDICA);
+				debeHaber.setTipoDocumento(tipoDocumento.getAbreviatura());
+				debeHaber.setNumeroDocumento(
+						isPersonaNatural ? personaNatural.getNumeroDocumento() : personaJuridica.getNumeroDocumento());
+				debeHaber
+						.setPersona(
+								isPersonaNatural
+										? personaNatural.getApellidoPaterno() + personaNatural.getApellidoMaterno()
+												+ ", " + personaNatural.getNombres()
+										: personaJuridica.getRazonSocial());
+
+				// add to list
+				list.add(debeHaber);
+			}
+			return list;
 		}
-		QueryParameter queryParameter = QueryParameter.with("idMoneda", idMoneda).and("tipo", tipoDebeHaber)
-				.and("fecha", fecha);
-		List<DebeHaber> list = debeHaberDAO.findByNamedQuery(DebeHaber.findIdMonedaTipoFecha,
-				queryParameter.parameters());
-		return list;
+
 	}
 
 	@Override
@@ -183,18 +256,18 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 		// Utilidad = caja + bancos + ctas por cobrar - ctas por pagar -
 		// patrimonio
 
-		BigDecimal utilidadSoles = getTotalUtilidadByMoneda(BigInteger.ONE, fechaReporte);		
+		BigDecimal utilidadSoles = getTotalUtilidadByMoneda(BigInteger.ONE, fechaReporte);
 		BigDecimal utilidadDolares = getTotalUtilidadByMoneda(BigInteger.ZERO, fechaReporte);
 		BigDecimal utilidadEuros = getTotalUtilidadByMoneda(new BigInteger("2"), fechaReporte);
 
 		// Obteniendo tasas de conversion para calculo de utilidades
 		BigDecimal tasaVentaDolares = variableSistemaServiceNT.getTasaCambio(BigInteger.ZERO, BigInteger.ONE);
 		BigDecimal tasaVentaEuros = variableSistemaServiceNT.getTasaCambio(new BigInteger("2"), BigInteger.ONE);
-		
+
 		// Convertir
 		utilidadDolares = utilidadDolares.multiply(tasaVentaDolares);
 		utilidadEuros = utilidadEuros.multiply(tasaVentaEuros);
-		
+
 		return utilidadSoles.add(utilidadDolares).add(utilidadEuros);
 	}
 

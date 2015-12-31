@@ -17,6 +17,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.core.Response;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.sistemafinanciero.entity.DebeHaber;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
 import org.sistemafinanciero.rest.ReportesRest;
@@ -37,345 +39,352 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 public class ReportesRestService implements ReportesRest {
 
-    @EJB
-    private ReportesServiceNT reportesServiceNT;
+	@EJB
+	private ReportesServiceNT reportesServiceNT;
 
-    @Override
-    public Response reporteDebeHaber(Long fecha, TipoDebeHaber tipoDebeHaber, BigInteger idMoneda) {
-        Date fechaReporte;
-        if (fecha == null) {
-            fechaReporte = Calendar.getInstance().getTime();
-        } else {
-            fechaReporte = new Date(fecha);
-        }
-        List<DebeHaber> list = reportesServiceNT.getDebeHaber(fechaReporte, idMoneda, tipoDebeHaber);
-        Response response = Response.status(Response.Status.OK).entity(list).build();
-        return response;
-    }
+	@Override
+	public Response reporteDebeHaber(Long fecha, TipoDebeHaber tipoDebeHaber, BigInteger idMoneda) {
+		Date fechaReporte = null;
+		if (fecha != null) {
+			fechaReporte = new Date(fecha);
+		}
 
-    @Override
-    public Response reporteDebeHaberPdf(Long fecha) {
-        Date fechaReporte;
-        if (fecha == null) {
-            fechaReporte = Calendar.getInstance().getTime();
-        } else {
-            fechaReporte = new Date(fecha);
-        }
-        List<DebeHaber> listDebe = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.DEBE);
-        List<DebeHaber> listHaber = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.HABER);
+		// verificar si se quiere reporte de hoy
+		DateTime first = DateTime.now();
+		DateTime second = new DateTime(fechaReporte);
+		LocalDate firstDate = first.toLocalDate();
+		LocalDate secondDate = second.toLocalDate();
+		if (firstDate.compareTo(secondDate) == 0) {
+			fechaReporte = null;
+		}
 
-        /** obteniendo la moneda y dando formato **/
-        NumberFormat df1 = NumberFormat.getCurrencyInstance();
-        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-        dfs.setCurrencySymbol("");
-        dfs.setGroupingSeparator(',');
-        dfs.setMonetaryDecimalSeparator('.');
-        ((DecimalFormat) df1).setDecimalFormatSymbols(dfs);
+		List<DebeHaber> list = reportesServiceNT.getDebeHaber(fechaReporte, idMoneda, tipoDebeHaber);
+		Response response = Response.status(Response.Status.OK).entity(list).build();
+		return response;
+	}
 
-        /** PDF **/
-        ByteArrayOutputStream outputStream = null;
-        outputStream = new ByteArrayOutputStream();
+	@Override
+	public Response reporteDebeHaberPdf(Long fecha) {
+		Date fechaReporte;
+		if (fecha == null) {
+			fechaReporte = Calendar.getInstance().getTime();
+		} else {
+			fechaReporte = new Date(fecha);
+		}
+		List<DebeHaber> listDebe = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.DEBE);
+		List<DebeHaber> listHaber = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.HABER);
 
-        Document document = new Document(PageSize.A4.rotate());
+		/** obteniendo la moneda y dando formato **/
+		NumberFormat df1 = NumberFormat.getCurrencyInstance();
+		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+		dfs.setCurrencySymbol("");
+		dfs.setGroupingSeparator(',');
+		dfs.setMonetaryDecimalSeparator('.');
+		((DecimalFormat) df1).setDecimalFormatSymbols(dfs);
 
-        try {
-            PdfWriter.getInstance(document, outputStream);
-            document.open();
+		/** PDF **/
+		ByteArrayOutputStream outputStream = null;
+		outputStream = new ByteArrayOutputStream();
 
-            document.addTitle("MULTISERVICIOS DEL SUR");
-            document.addSubject("Estado contable DEBE HABER");
-            document.addKeywords("pdf");
-            document.addAuthor("MULTISERVICIOS DEL SUR");
-            document.addCreator("MULTISERVICIOS DEL SUR");
+		Document document = new Document(PageSize.A4.rotate());
 
-            // Saldo de linea
-            document.add(new Paragraph());
-        } catch (DocumentException e1) {
-            e1.printStackTrace();
-        }
+		try {
+			PdfWriter.getInstance(document, outputStream);
+			document.open();
 
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			document.addTitle("MULTISERVICIOS DEL SUR");
+			document.addSubject("Estado contable DEBE HABER");
+			document.addKeywords("pdf");
+			document.addAuthor("MULTISERVICIOS DEL SUR");
+			document.addCreator("MULTISERVICIOS DEL SUR");
 
-        /******************* TITULO ******************/
-        try {
-            Image img = Image
-                    .getInstance("//usr//share//jboss//archivos//logoCartilla//logo_coop_contrato.png");
-            img.setAlignment(Image.LEFT | Image.UNDERLYING);
-            document.add(img);
+			// Saldo de linea
+			document.add(new Paragraph());
+		} catch (DocumentException e1) {
+			e1.printStackTrace();
+		}
 
-            Paragraph parrafoPrincipal = new Paragraph();
-            parrafoPrincipal.setSpacingAfter(30);
-            parrafoPrincipal.setAlignment(Element.ALIGN_CENTER);
-            parrafoPrincipal.setIndentationLeft(100);
-            parrafoPrincipal.setIndentationRight(50);
+		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
-            Paragraph parrafoSecundario1 = new Paragraph();
-            parrafoSecundario1.setSpacingAfter(20);
-            parrafoSecundario1.setSpacingBefore(-20);
-            parrafoSecundario1.setAlignment(Element.ALIGN_LEFT);
-            parrafoSecundario1.setIndentationLeft(160);
-            parrafoSecundario1.setIndentationRight(10);
+		/******************* TITULO ******************/
+		try {
+			Image img = Image.getInstance("//usr//share//jboss//archivos//logoCartilla//logo_coop_contrato.png");
+			img.setAlignment(Image.LEFT | Image.UNDERLYING);
+			document.add(img);
 
-            Chunk titulo = new Chunk("MULTIVALORES DEL SUR");
-            Font fuenteTitulo = new Font(FontFamily.UNDEFINED, 12, Font.BOLD);
-            titulo.setFont(fuenteTitulo);
-            parrafoPrincipal.add(titulo);
+			Paragraph parrafoPrincipal = new Paragraph();
+			parrafoPrincipal.setSpacingAfter(30);
+			parrafoPrincipal.setAlignment(Element.ALIGN_CENTER);
+			parrafoPrincipal.setIndentationLeft(100);
+			parrafoPrincipal.setIndentationRight(50);
 
-            Font fuenteSubTitulo = new Font(FontFamily.UNDEFINED, 10, Font.BOLD);
-            Chunk subtitulo1 = new Chunk("Reporte debe haber");
-            subtitulo1.setFont(fuenteSubTitulo);
-            parrafoSecundario1.add(subtitulo1);
+			Paragraph parrafoSecundario1 = new Paragraph();
+			parrafoSecundario1.setSpacingAfter(20);
+			parrafoSecundario1.setSpacingBefore(-20);
+			parrafoSecundario1.setAlignment(Element.ALIGN_LEFT);
+			parrafoSecundario1.setIndentationLeft(160);
+			parrafoSecundario1.setIndentationRight(10);
 
-            Paragraph parrafoSecundario2 = new Paragraph();
-            parrafoSecundario2.setSpacingAfter(20);
-            parrafoSecundario2.setSpacingBefore(-20);
-            parrafoSecundario2.setAlignment(Element.ALIGN_LEFT);
-            parrafoSecundario2.setIndentationLeft(160);
-            parrafoSecundario2.setIndentationRight(10);
+			Chunk titulo = new Chunk("MULTIVALORES DEL SUR");
+			Font fuenteTitulo = new Font(FontFamily.UNDEFINED, 12, Font.BOLD);
+			titulo.setFont(fuenteTitulo);
+			parrafoPrincipal.add(titulo);
 
-            Chunk subtitulo2 = new Chunk("Fecha:" + df.format(fechaReporte));
-            subtitulo2.setFont(fuenteSubTitulo);
-            parrafoSecundario2.add(subtitulo2);
+			Font fuenteSubTitulo = new Font(FontFamily.UNDEFINED, 10, Font.BOLD);
+			Chunk subtitulo1 = new Chunk("Reporte debe haber");
+			subtitulo1.setFont(fuenteSubTitulo);
+			parrafoSecundario1.add(subtitulo1);
 
-            document.add(parrafoPrincipal);
-            document.add(parrafoSecundario1);
-            document.add(parrafoSecundario2);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+			Paragraph parrafoSecundario2 = new Paragraph();
+			parrafoSecundario2.setSpacingAfter(20);
+			parrafoSecundario2.setSpacingBefore(-20);
+			parrafoSecundario2.setAlignment(Element.ALIGN_LEFT);
+			parrafoSecundario2.setIndentationLeft(160);
+			parrafoSecundario2.setIndentationRight(10);
 
-        Font fontTableCabecera = new Font(FontFamily.UNDEFINED, 10, Font.BOLD);
-        Font fontCuerpo = new Font(FontFamily.UNDEFINED, 8, Font.NORMAL);
+			Chunk subtitulo2 = new Chunk("Fecha:" + df.format(fechaReporte));
+			subtitulo2.setFont(fuenteSubTitulo);
+			parrafoSecundario2.add(subtitulo2);
 
-        // row
-        float[] columnWidthsROW = { 4f, 4f };
-        PdfPTable row = new PdfPTable(columnWidthsROW);
-        row.setWidthPercentage(100);
-        row.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
+			document.add(parrafoPrincipal);
+			document.add(parrafoSecundario1);
+			document.add(parrafoSecundario2);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-        float[] columnWidthsCOL6Left = { 1.5f, 8f, 4.5f, 3.5f, 3.5f, 3.5f };
-        PdfPTable tableLeft = new PdfPTable(columnWidthsCOL6Left);
-        tableLeft.setWidthPercentage(100);
+		Font fontTableCabecera = new Font(FontFamily.UNDEFINED, 10, Font.BOLD);
+		Font fontCuerpo = new Font(FontFamily.UNDEFINED, 8, Font.NORMAL);
 
-        float[] columnWidthsCOL6Right = { 1.5f, 8f, 4.5f, 3.5f, 3.5f, 3.5f };
-        PdfPTable tableRight = new PdfPTable(columnWidthsCOL6Right);
-        tableRight.setWidthPercentage(100);
+		// row
+		float[] columnWidthsROW = { 4f, 4f };
+		PdfPTable row = new PdfPTable(columnWidthsROW);
+		row.setWidthPercentage(100);
+		row.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
 
-        setRowsTableDebeHaber(listDebe, tableLeft, fontCuerpo);
-        setRowsTableDebeHaber(listHaber, tableRight, fontCuerpo);
+		float[] columnWidthsCOL6Left = { 1.5f, 8f, 4.5f, 3.5f, 3.5f, 3.5f };
+		PdfPTable tableLeft = new PdfPTable(columnWidthsCOL6Left);
+		tableLeft.setWidthPercentage(100);
 
-        row.addCell(tableLeft);
-        row.addCell(tableRight);
+		float[] columnWidthsCOL6Right = { 1.5f, 8f, 4.5f, 3.5f, 3.5f, 3.5f };
+		PdfPTable tableRight = new PdfPTable(columnWidthsCOL6Right);
+		tableRight.setWidthPercentage(100);
 
-        try {
-            Paragraph parrafoDebeHaber = new Paragraph();
-            parrafoDebeHaber.setAlignment(Element.ALIGN_LEFT);
+		setRowsTableDebeHaber(listDebe, tableLeft, fontCuerpo);
+		setRowsTableDebeHaber(listHaber, tableRight, fontCuerpo);
 
-            Chunk chunkDebe = new Chunk(" DEBE", fontTableCabecera);
-            parrafoDebeHaber.add(chunkDebe);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            parrafoDebeHaber.add(Chunk.TABBING);
-            Chunk chunkHaber = new Chunk("          HABER", fontTableCabecera);
-            parrafoDebeHaber.add(chunkHaber);
+		row.addCell(tableLeft);
+		row.addCell(tableRight);
 
-            document.add(parrafoDebeHaber);
-            document.add(row);
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
+		try {
+			Paragraph parrafoDebeHaber = new Paragraph();
+			parrafoDebeHaber.setAlignment(Element.ALIGN_LEFT);
 
-        document.close();
+			Chunk chunkDebe = new Chunk(" DEBE", fontTableCabecera);
+			parrafoDebeHaber.add(chunkDebe);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			parrafoDebeHaber.add(Chunk.TABBING);
+			Chunk chunkHaber = new Chunk("          HABER", fontTableCabecera);
+			parrafoDebeHaber.add(chunkHaber);
 
-        return Response.ok(outputStream.toByteArray()).type("application/pdf").build();
-    }
+			document.add(parrafoDebeHaber);
+			document.add(row);
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
 
-    private void setRowsTableDebeHaber(List<DebeHaber> list, PdfPTable table, Font font) {
-        /** obteniendo la moneda y dando formato **/
-        NumberFormat df1 = NumberFormat.getCurrencyInstance();
-        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-        dfs.setCurrencySymbol("");
-        dfs.setGroupingSeparator(',');
-        dfs.setMonetaryDecimalSeparator('.');
-        ((DecimalFormat) df1).setDecimalFormatSymbols(dfs);
+		document.close();
 
-        table.setWidthPercentage(100);
-        table.addCell(new PdfPCell(new Paragraph("Nro", font)));
-        // table.addCell(new PdfPCell(new Paragraph("DOCUMENTO", font)));
-        table.addCell(new PdfPCell(new Paragraph("PERSONA", font)));
-        // table.addCell(new PdfPCell(new Paragraph("TIPO", font)));
-        table.addCell(new PdfPCell(new Paragraph("CUENTA", font)));
-        table.addCell(new PdfPCell(new Paragraph("SOLES", font)));
-        table.addCell(new PdfPCell(new Paragraph("DOLARES", font)));
-        table.addCell(new PdfPCell(new Paragraph("EUROS", font)));
+		return Response.ok(outputStream.toByteArray()).type("application/pdf").build();
+	}
 
-        if (list.isEmpty()) {
-            PdfPCell cell = new PdfPCell(new Paragraph("No existente", font));
-            cell.setColspan(8);
-            table.addCell(cell);
-        }
+	private void setRowsTableDebeHaber(List<DebeHaber> list, PdfPTable table, Font font) {
+		/** obteniendo la moneda y dando formato **/
+		NumberFormat df1 = NumberFormat.getCurrencyInstance();
+		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+		dfs.setCurrencySymbol("");
+		dfs.setGroupingSeparator(',');
+		dfs.setMonetaryDecimalSeparator('.');
+		((DecimalFormat) df1).setDecimalFormatSymbols(dfs);
 
-        BigDecimal totalSoles = BigDecimal.ZERO;
-        BigDecimal totalDolares = BigDecimal.ZERO;
-        BigDecimal totalEuros = BigDecimal.ZERO;
-        for (int i = 0; i < list.size(); i++) {
-            DebeHaber debeHaber = list.get(i);
+		table.setWidthPercentage(100);
+		table.addCell(new PdfPCell(new Paragraph("Nro", font)));
+		// table.addCell(new PdfPCell(new Paragraph("DOCUMENTO", font)));
+		table.addCell(new PdfPCell(new Paragraph("PERSONA", font)));
+		// table.addCell(new PdfPCell(new Paragraph("TIPO", font)));
+		table.addCell(new PdfPCell(new Paragraph("CUENTA", font)));
+		table.addCell(new PdfPCell(new Paragraph("SOLES", font)));
+		table.addCell(new PdfPCell(new Paragraph("DOLARES", font)));
+		table.addCell(new PdfPCell(new Paragraph("EUROS", font)));
 
-            table.addCell(new PdfPCell(new Paragraph(String.valueOf(i + 1), font)));
-            /*
-             * table.addCell(new Paragraph(debeHaber.getTipoDocumento() + ":" +
-             * debeHaber.getNumeroDocumento(), font));
-             */
-            table.addCell(new Paragraph(debeHaber.getPersona(), font));
+		if (list.isEmpty()) {
+			PdfPCell cell = new PdfPCell(new Paragraph("No existente", font));
+			cell.setColspan(8);
+			table.addCell(cell);
+		}
 
-            // table.addCell(new Paragraph("NO DEFINIDO", font));
-            table.addCell(new Paragraph(debeHaber.getNumeroCuenta(), font));
+		BigDecimal totalSoles = BigDecimal.ZERO;
+		BigDecimal totalDolares = BigDecimal.ZERO;
+		BigDecimal totalEuros = BigDecimal.ZERO;
+		for (int i = 0; i < list.size(); i++) {
+			DebeHaber debeHaber = list.get(i);
 
-            if (debeHaber.getSimboloMoneda().equalsIgnoreCase("S/.")) {
-                totalSoles = totalSoles.add(debeHaber.getMonto().abs());
+			table.addCell(new PdfPCell(new Paragraph(String.valueOf(i + 1), font)));
+			/*
+			 * table.addCell(new Paragraph(debeHaber.getTipoDocumento() + ":" +
+			 * debeHaber.getNumeroDocumento(), font));
+			 */
+			table.addCell(new Paragraph(debeHaber.getPersona(), font));
 
-                PdfPCell uno = new PdfPCell(new Paragraph("S/." + df1.format(debeHaber.getMonto()), font));
-                uno.setHorizontalAlignment(Element.ALIGN_RIGHT);
-                PdfPCell dos = new PdfPCell(new Paragraph("$" + df1.format(BigDecimal.ZERO), font));
-                dos.setHorizontalAlignment(Element.ALIGN_RIGHT);
-                PdfPCell tres = new PdfPCell(new Paragraph("€" + df1.format(BigDecimal.ZERO), font));
-                tres.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			// table.addCell(new Paragraph("NO DEFINIDO", font));
+			table.addCell(new Paragraph(debeHaber.getNumeroCuenta(), font));
 
-                table.addCell(new PdfPCell(uno));
-                table.addCell(new PdfPCell(dos));
-                table.addCell(new PdfPCell(tres));
-            } else if (debeHaber.getSimboloMoneda().equalsIgnoreCase("$")) {
-                totalDolares = totalDolares.add(debeHaber.getMonto().abs());
+			if (debeHaber.getSimboloMoneda().equalsIgnoreCase("S/.")) {
+				totalSoles = totalSoles.add(debeHaber.getMonto().abs());
 
-                PdfPCell uno = new PdfPCell(new Paragraph("S/." + df1.format(BigDecimal.ZERO), font));
-                uno.setHorizontalAlignment(Element.ALIGN_RIGHT);
-                PdfPCell dos = new PdfPCell(new Paragraph("$" + df1.format(debeHaber.getMonto()), font));
-                dos.setHorizontalAlignment(Element.ALIGN_RIGHT);
-                PdfPCell tres = new PdfPCell(new Paragraph("€" + df1.format(BigDecimal.ZERO), font));
-                tres.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				PdfPCell uno = new PdfPCell(new Paragraph("S/." + df1.format(debeHaber.getMonto()), font));
+				uno.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				PdfPCell dos = new PdfPCell(new Paragraph("$" + df1.format(BigDecimal.ZERO), font));
+				dos.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				PdfPCell tres = new PdfPCell(new Paragraph("€" + df1.format(BigDecimal.ZERO), font));
+				tres.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-                table.addCell(new PdfPCell(uno));
-                table.addCell(new PdfPCell(dos));
-                table.addCell(new PdfPCell(tres));
-            } else if (debeHaber.getSimboloMoneda().equalsIgnoreCase("€")) {
-                totalEuros = totalEuros.add(debeHaber.getMonto().abs());
+				table.addCell(new PdfPCell(uno));
+				table.addCell(new PdfPCell(dos));
+				table.addCell(new PdfPCell(tres));
+			} else if (debeHaber.getSimboloMoneda().equalsIgnoreCase("$")) {
+				totalDolares = totalDolares.add(debeHaber.getMonto().abs());
 
-                PdfPCell uno = new PdfPCell(new Paragraph("S/." + df1.format(BigDecimal.ZERO), font));
-                uno.setHorizontalAlignment(Element.ALIGN_RIGHT);
-                PdfPCell dos = new PdfPCell(new Paragraph("$" + df1.format(BigDecimal.ZERO), font));
-                dos.setHorizontalAlignment(Element.ALIGN_RIGHT);
-                PdfPCell tres = new PdfPCell(new Paragraph("€" + df1.format(debeHaber.getMonto()), font));
-                tres.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				PdfPCell uno = new PdfPCell(new Paragraph("S/." + df1.format(BigDecimal.ZERO), font));
+				uno.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				PdfPCell dos = new PdfPCell(new Paragraph("$" + df1.format(debeHaber.getMonto()), font));
+				dos.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				PdfPCell tres = new PdfPCell(new Paragraph("€" + df1.format(BigDecimal.ZERO), font));
+				tres.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-                table.addCell(new PdfPCell(uno));
-                table.addCell(new PdfPCell(dos));
-                table.addCell(new PdfPCell(tres));
-            }
-        }
+				table.addCell(new PdfPCell(uno));
+				table.addCell(new PdfPCell(dos));
+				table.addCell(new PdfPCell(tres));
+			} else if (debeHaber.getSimboloMoneda().equalsIgnoreCase("€")) {
+				totalEuros = totalEuros.add(debeHaber.getMonto().abs());
 
-        PdfPCell total = new PdfPCell(new Paragraph("TOTAL", font));
-        total.setColspan(3);
-        table.addCell(total);
+				PdfPCell uno = new PdfPCell(new Paragraph("S/." + df1.format(BigDecimal.ZERO), font));
+				uno.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				PdfPCell dos = new PdfPCell(new Paragraph("$" + df1.format(BigDecimal.ZERO), font));
+				dos.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				PdfPCell tres = new PdfPCell(new Paragraph("€" + df1.format(debeHaber.getMonto()), font));
+				tres.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-        PdfPCell totalCellSoles = new PdfPCell(new Paragraph("S/." + df1.format(totalSoles), font));
-        totalCellSoles.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        table.addCell(new PdfPCell(totalCellSoles));
+				table.addCell(new PdfPCell(uno));
+				table.addCell(new PdfPCell(dos));
+				table.addCell(new PdfPCell(tres));
+			}
+		}
 
-        PdfPCell totalCellDolares = new PdfPCell(new Paragraph("$" + df1.format(totalDolares), font));
-        totalCellDolares.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        table.addCell(new PdfPCell(totalCellDolares));
+		PdfPCell total = new PdfPCell(new Paragraph("TOTAL", font));
+		total.setColspan(3);
+		table.addCell(total);
 
-        PdfPCell totalCellEuros = new PdfPCell(new Paragraph("€" + df1.format(totalEuros), font));
-        totalCellEuros.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        table.addCell(new PdfPCell(totalCellEuros));
-    }
+		PdfPCell totalCellSoles = new PdfPCell(new Paragraph("S/." + df1.format(totalSoles), font));
+		totalCellSoles.setHorizontalAlignment(Element.ALIGN_RIGHT);
+		table.addCell(new PdfPCell(totalCellSoles));
 
-    @Override
-    public Response reporteDebeHaberTotales(Long fecha, TipoDebeHaber tipoDebeHaber, BigInteger idMoneda) {
-        Date fechaReporte;
-        if (fecha == null) {
-            fechaReporte = Calendar.getInstance().getTime();
-        } else {
-            fechaReporte = new Date(fecha);
-        }
-        BigDecimal result = reportesServiceNT.getDebeHaberTotal(fechaReporte, idMoneda, tipoDebeHaber);
-        Response response = Response.status(Response.Status.OK).entity(result).build();
-        return response;
-    }
+		PdfPCell totalCellDolares = new PdfPCell(new Paragraph("$" + df1.format(totalDolares), font));
+		totalCellDolares.setHorizontalAlignment(Element.ALIGN_RIGHT);
+		table.addCell(new PdfPCell(totalCellDolares));
 
-    @Override
-    public Response reporteDebeHaberHistorialTotales(Long desde, Long hasta, TipoDebeHaber tipoDebeHaber,
-            BigInteger idMoneda) {
-        Date desdeReporte = new Date(desde);
-        Date hastaReporte = new Date(hasta);
+		PdfPCell totalCellEuros = new PdfPCell(new Paragraph("€" + df1.format(totalEuros), font));
+		totalCellEuros.setHorizontalAlignment(Element.ALIGN_RIGHT);
+		table.addCell(new PdfPCell(totalCellEuros));
+	}
 
-        List<DebeHaber> result = reportesServiceNT.getDebeHaberHistorialTotal(desdeReporte, hastaReporte,
-                idMoneda, tipoDebeHaber);
-        Response response = Response.status(Response.Status.OK).entity(result).build();
-        return response;
-    }
+	@Override
+	public Response reporteDebeHaberTotales(Long fecha, TipoDebeHaber tipoDebeHaber, BigInteger idMoneda) {
+		Date fechaReporte;
+		if (fecha == null) {
+			fechaReporte = Calendar.getInstance().getTime();
+		} else {
+			fechaReporte = new Date(fecha);
+		}
+		BigDecimal result = reportesServiceNT.getDebeHaberTotal(fechaReporte, idMoneda, tipoDebeHaber);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
+	}
+
+	@Override
+	public Response reporteDebeHaberHistorialTotales(Long desde, Long hasta, TipoDebeHaber tipoDebeHaber,
+			BigInteger idMoneda) {
+		Date desdeReporte = new Date(desde);
+		Date hastaReporte = new Date(hasta);
+
+		List<DebeHaber> result = reportesServiceNT.getDebeHaberHistorialTotal(desdeReporte, hastaReporte, idMoneda,
+				tipoDebeHaber);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
+	}
 
 	@Override
 	public Response reporteCuentasPorCobrar(BigInteger idMoneda, Long fecha) {
 		Date fechaReporte;
-        if (fecha == null) {
-            fechaReporte = Calendar.getInstance().getTime();
-        } else {
-            fechaReporte = new Date(fecha);
-        }
-        BigDecimal result = reportesServiceNT.getTotalCuentasPorCobrar(idMoneda, fechaReporte);
-        Response response = Response.status(Response.Status.OK).entity(result).build();
-        return response;
+		if (fecha == null) {
+			fechaReporte = Calendar.getInstance().getTime();
+		} else {
+			fechaReporte = new Date(fecha);
+		}
+		BigDecimal result = reportesServiceNT.getTotalCuentasPorCobrar(idMoneda, fechaReporte);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
 	}
 
 	@Override
 	public Response reporteCuentasPorPagar(BigInteger idMoneda, Long fecha) {
 		Date fechaReporte;
-        if (fecha == null) {
-            fechaReporte = Calendar.getInstance().getTime();
-        } else {
-            fechaReporte = new Date(fecha);
-        }
-        BigDecimal result = reportesServiceNT.getTotalCuentasPorPagar(idMoneda, fechaReporte);
-        Response response = Response.status(Response.Status.OK).entity(result).build();
-        return response;
+		if (fecha == null) {
+			fechaReporte = Calendar.getInstance().getTime();
+		} else {
+			fechaReporte = new Date(fecha);
+		}
+		BigDecimal result = reportesServiceNT.getTotalCuentasPorPagar(idMoneda, fechaReporte);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
 	}
-	
+
 	@Override
 	public Response reportePatrimonio(BigInteger idMoneda, Long fecha) {
 		Date fechaReporte;
-        if (fecha == null) {
-            fechaReporte = Calendar.getInstance().getTime();
-        } else {
-            fechaReporte = new Date(fecha);
-        }
-        BigDecimal result = reportesServiceNT.getPatrimonio(idMoneda, fechaReporte);
-        Response response = Response.status(Response.Status.OK).entity(result).build();
-        return response;
+		if (fecha == null) {
+			fechaReporte = Calendar.getInstance().getTime();
+		} else {
+			fechaReporte = new Date(fecha);
+		}
+		BigDecimal result = reportesServiceNT.getPatrimonio(idMoneda, fechaReporte);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
 	}
 
 	@Override
 	public Response reporteUtilidad(BigInteger idMoneda, Long fecha) {
 		Date fechaReporte;
-        if (fecha == null) {
-            fechaReporte = Calendar.getInstance().getTime();
-        } else {
-            fechaReporte = new Date(fecha);
-        }
-        BigDecimal result = reportesServiceNT.getTotalUtilidad(idMoneda, fechaReporte);
-        Response response = Response.status(Response.Status.OK).entity(result).build();
-        return response;
+		if (fecha == null) {
+			fechaReporte = Calendar.getInstance().getTime();
+		} else {
+			fechaReporte = new Date(fecha);
+		}
+		BigDecimal result = reportesServiceNT.getTotalUtilidad(idMoneda, fechaReporte);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
 	}
-	
+
 }
