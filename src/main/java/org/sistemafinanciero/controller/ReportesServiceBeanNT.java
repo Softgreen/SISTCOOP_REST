@@ -142,17 +142,42 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 
 	@Override
 	public BigDecimal getDebeHaberTotal(Date fechaReporte, BigInteger idMoneda, TipoDebeHaber tipoDebeHaber) {
-		Date desde = DateUtils.getDateIn00Time(fechaReporte);
-		Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(fechaReporte, 1));
+		if (fechaReporte != null) {
+			Date desde = DateUtils.getDateIn00Time(fechaReporte);
+			Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(fechaReporte, 1));
 
-		Query query = em.getEm().createQuery(
-				("SELECT SUM(dh.monto) FROM DebeHaber dh WHERE dh.idMoneda =:idMoneda AND dh.tipo = :tipo AND dh.fecha BETWEEN :desde AND :hasta"));
-		query.setParameter("idMoneda", idMoneda);
-		query.setParameter("tipo", tipoDebeHaber);
-		query.setParameter("desde", desde);
-		query.setParameter("hasta", hasta);
+			Query query = em.getEm().createQuery(
+					("SELECT SUM(dh.monto) FROM DebeHaber dh WHERE dh.idMoneda =:idMoneda AND dh.tipo = :tipo AND dh.fecha BETWEEN :desde AND :hasta"));
+			query.setParameter("idMoneda", idMoneda);
+			query.setParameter("tipo", tipoDebeHaber);
+			query.setParameter("desde", desde);
+			query.setParameter("hasta", hasta);
 
-		return (BigDecimal) query.getSingleResult();
+			return (BigDecimal) query.getSingleResult();
+		} else {
+			List<EstadoCuentaBancaria> estados = new ArrayList<>();
+			estados.add(EstadoCuentaBancaria.ACTIVO);
+			estados.add(EstadoCuentaBancaria.CONGELADO);
+			QueryParameter queryParameter = QueryParameter.with("estado", estados).and("idMoneda", idMoneda);
+			List<CuentaBancaria> cuentasBancarias = cuentaBancariaDAO
+					.findByNamedQuery(CuentaBancaria.findByEstadoAndMoneda, queryParameter.parameters());
+
+			BigDecimal total = BigDecimal.ZERO;
+			for (CuentaBancaria cta : cuentasBancarias) {
+				if (tipoDebeHaber.equals(TipoDebeHaber.DEBE)) {
+					if (cta.getSaldo().compareTo(BigDecimal.ZERO) < 0) {
+						break;
+					}
+				} else {
+					if (cta.getSaldo().compareTo(BigDecimal.ZERO) >= 0) {
+						break;
+					}
+				}
+
+				total = total.add(cta.getSaldo());
+			}
+			return total;
+		}
 	}
 
 	@Override
