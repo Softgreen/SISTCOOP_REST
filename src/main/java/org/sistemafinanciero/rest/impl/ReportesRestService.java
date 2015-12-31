@@ -85,7 +85,12 @@ public class ReportesRestService implements ReportesRest {
 		
 		List<DebeHaber> listDebe = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.DEBE);
 		List<DebeHaber> listHaber = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.HABER);
-
+		if (fecha != null) {
+			fechaReporte = new Date(fecha);
+		} else {
+			fechaReporte = Calendar.getInstance().getTime();
+		}
+		
 		/** obteniendo la moneda y dando formato **/
 		NumberFormat df1 = NumberFormat.getCurrencyInstance();
 		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
