@@ -47,6 +47,8 @@ public class ReportesRestService implements ReportesRest {
 		Date fechaReporte = null;
 		if (fecha != null) {
 			fechaReporte = new Date(fecha);
+		} else {
+			fechaReporte = Calendar.getInstance().getTime();
 		}
 
 		// verificar si se quiere reporte de hoy
@@ -65,12 +67,22 @@ public class ReportesRestService implements ReportesRest {
 
 	@Override
 	public Response reporteDebeHaberPdf(Long fecha) {
-		Date fechaReporte;
-		if (fecha == null) {
-			fechaReporte = Calendar.getInstance().getTime();
-		} else {
+		Date fechaReporte = null;
+		if (fecha != null) {
 			fechaReporte = new Date(fecha);
+		} else {
+			fechaReporte = Calendar.getInstance().getTime();
 		}
+
+		// verificar si se quiere reporte de hoy
+		DateTime first = DateTime.now();
+		DateTime second = new DateTime(fechaReporte);
+		LocalDate firstDate = first.toLocalDate();
+		LocalDate secondDate = second.toLocalDate();
+		if (firstDate.compareTo(secondDate) == 0) {
+			fechaReporte = null;
+		}
+		
 		List<DebeHaber> listDebe = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.DEBE);
 		List<DebeHaber> listHaber = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.HABER);
 
@@ -315,6 +327,8 @@ public class ReportesRestService implements ReportesRest {
 		Date fechaReporte = null;
 		if (fecha != null) {
 			fechaReporte = new Date(fecha);
+		} else {
+			fechaReporte = Calendar.getInstance().getTime();
 		}
 
 		// verificar si se quiere reporte de hoy
