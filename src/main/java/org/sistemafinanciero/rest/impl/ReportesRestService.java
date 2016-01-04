@@ -47,6 +47,8 @@ public class ReportesRestService implements ReportesRest {
 		Date fechaReporte = null;
 		if (fecha != null) {
 			fechaReporte = new Date(fecha);
+		} else {
+			fechaReporte = Calendar.getInstance().getTime();
 		}
 
 		// verificar si se quiere reporte de hoy
@@ -65,15 +67,30 @@ public class ReportesRestService implements ReportesRest {
 
 	@Override
 	public Response reporteDebeHaberPdf(Long fecha) {
-		Date fechaReporte;
-		if (fecha == null) {
-			fechaReporte = Calendar.getInstance().getTime();
-		} else {
+		Date fechaReporte = null;
+		if (fecha != null) {
 			fechaReporte = new Date(fecha);
+		} else {
+			fechaReporte = Calendar.getInstance().getTime();
 		}
+
+		// verificar si se quiere reporte de hoy
+		DateTime first = DateTime.now();
+		DateTime second = new DateTime(fechaReporte);
+		LocalDate firstDate = first.toLocalDate();
+		LocalDate secondDate = second.toLocalDate();
+		if (firstDate.compareTo(secondDate) == 0) {
+			fechaReporte = null;
+		}
+		
 		List<DebeHaber> listDebe = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.DEBE);
 		List<DebeHaber> listHaber = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.HABER);
-
+		if (fecha != null) {
+			fechaReporte = new Date(fecha);
+		} else {
+			fechaReporte = Calendar.getInstance().getTime();
+		}
+		
 		/** obteniendo la moneda y dando formato **/
 		NumberFormat df1 = NumberFormat.getCurrencyInstance();
 		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
@@ -312,12 +329,22 @@ public class ReportesRestService implements ReportesRest {
 
 	@Override
 	public Response reporteDebeHaberTotales(Long fecha, TipoDebeHaber tipoDebeHaber, BigInteger idMoneda) {
-		Date fechaReporte;
-		if (fecha == null) {
-			fechaReporte = Calendar.getInstance().getTime();
-		} else {
+		Date fechaReporte = null;
+		if (fecha != null) {
 			fechaReporte = new Date(fecha);
+		} else {
+			fechaReporte = Calendar.getInstance().getTime();
 		}
+
+		// verificar si se quiere reporte de hoy
+		DateTime first = DateTime.now();
+		DateTime second = new DateTime(fechaReporte);
+		LocalDate firstDate = first.toLocalDate();
+		LocalDate secondDate = second.toLocalDate();
+		if (firstDate.compareTo(secondDate) == 0) {
+			fechaReporte = null;
+		}
+		
 		BigDecimal result = reportesServiceNT.getDebeHaberTotal(fechaReporte, idMoneda, tipoDebeHaber);
 		Response response = Response.status(Response.Status.OK).entity(result).build();
 		return response;

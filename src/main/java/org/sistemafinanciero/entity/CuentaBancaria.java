@@ -43,6 +43,7 @@ import org.sistemafinanciero.entity.type.TipoCuentaBancaria;
 @XmlAccessorType(XmlAccessType.NONE)
 @NamedQueries({
 		@NamedQuery(name = CuentaBancaria.findByNumeroCuenta, query = "SELECT c FROM CuentaBancaria c WHERE c.numeroCuenta = :numerocuenta"),
+		@NamedQuery(name = CuentaBancaria.findByEstado, query = "SELECT c FROM CuentaBancaria c WHERE c.estado IN :estado"),
 		@NamedQuery(name = CuentaBancaria.findByEstadoAndMoneda, query = "SELECT c FROM CuentaBancaria c INNER JOIN c.moneda m WHERE c.estado IN :estado AND m.idMoneda = :idMoneda") })
 public class CuentaBancaria implements java.io.Serializable {
 
@@ -52,6 +53,7 @@ public class CuentaBancaria implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public final static String findByNumeroCuenta = "CuentaBancaria.findByNumeroCuenta";
+	public final static String findByEstado = "CuentaBancaria.findByEstado";
 	public final static String findByEstadoAndMoneda = "CuentaBancaria.findByEstadoAndMoneda";
 
 	private BigInteger idCuentaBancaria;

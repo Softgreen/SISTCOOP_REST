@@ -132,27 +132,112 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 
 	@Override
 	public List<DebeHaber> getDebeHaber(Date fecha, TipoDebeHaber tipoDebeHaber) {
-		if (fecha == null) {
-			return null;
-		}
-		QueryParameter queryParameter = QueryParameter.with("tipo", tipoDebeHaber).and("fecha", fecha);
-		List<DebeHaber> list = debeHaberDAO.findByNamedQuery(DebeHaber.findTipoFecha, queryParameter.parameters());
-		return list;
+		if (fecha != null) {
+			QueryParameter queryParameter = QueryParameter.with("tipo", tipoDebeHaber).and("fecha", fecha);
+			List<DebeHaber> list = debeHaberDAO.findByNamedQuery(DebeHaber.findTipoFecha, queryParameter.parameters());
+			return list;
+		} else {
+			List<EstadoCuentaBancaria> estados = new ArrayList<>();
+			estados.add(EstadoCuentaBancaria.ACTIVO);
+			estados.add(EstadoCuentaBancaria.CONGELADO);
+			QueryParameter queryParameter = QueryParameter.with("estado", estados);
+			List<CuentaBancaria> cuentasBancarias = cuentaBancariaDAO
+					.findByNamedQuery(CuentaBancaria.findByEstado, queryParameter.parameters());
+
+			List<DebeHaber> list = new ArrayList<>();
+			Calendar calendar = Calendar.getInstance();
+			for (CuentaBancaria cta : cuentasBancarias) {
+				if (tipoDebeHaber.equals(TipoDebeHaber.DEBE)) {
+					if (cta.getSaldo().compareTo(BigDecimal.ZERO) < 0) {
+						break;
+					}
+				} else {
+					if (cta.getSaldo().compareTo(BigDecimal.ZERO) >= 0) {
+						break;
+					}
+				}
+
+				Moneda moneda = cta.getMoneda();
+
+				Socio socio = cta.getSocio();
+				PersonaNatural personaNatural = socio.getPersonaNatural();
+				PersonaJuridica personaJuridica = socio.getPersonaJuridica();
+				TipoDocumento tipoDocumento = personaNatural != null ? personaNatural.getTipoDocumento()
+						: personaJuridica.getTipoDocumento();
+				boolean isPersonaNatural = personaNatural != null ? true : false;
+
+				// Create obj
+				DebeHaber debeHaber = new DebeHaber();
+				debeHaber.setIdDebehaber(null);
+				debeHaber.setTipo(
+						cta.getSaldo().compareTo(BigDecimal.ZERO) >= 0 ? TipoDebeHaber.DEBE : TipoDebeHaber.HABER);
+
+				debeHaber.setNumeroCuenta(cta.getNumeroCuenta());
+
+				debeHaber.setIdMoneda(moneda.getIdMoneda());
+				debeHaber.setDenominacionMoneda(moneda.getDenominacion());
+				debeHaber.setSimboloMoneda(moneda.getSimbolo());
+				debeHaber.setMonto(cta.getSaldo());
+
+				debeHaber.setFecha(calendar.getTime());
+				debeHaber.setHora(calendar.getTime());
+
+				debeHaber.setTipoPersona(isPersonaNatural ? TipoPersona.NATURAL : TipoPersona.JURIDICA);
+				debeHaber.setTipoDocumento(tipoDocumento.getAbreviatura());
+				debeHaber.setNumeroDocumento(
+						isPersonaNatural ? personaNatural.getNumeroDocumento() : personaJuridica.getNumeroDocumento());
+				debeHaber
+						.setPersona(
+								isPersonaNatural
+										? personaNatural.getApellidoPaterno() + personaNatural.getApellidoMaterno()
+												+ ", " + personaNatural.getNombres()
+										: personaJuridica.getRazonSocial());
+
+				// add to list
+				list.add(debeHaber);
+			}
+			return list;
+		}		
 	}
 
 	@Override
 	public BigDecimal getDebeHaberTotal(Date fechaReporte, BigInteger idMoneda, TipoDebeHaber tipoDebeHaber) {
-		Date desde = DateUtils.getDateIn00Time(fechaReporte);
-		Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(fechaReporte, 1));
+		if (fechaReporte != null) {
+			Date desde = DateUtils.getDateIn00Time(fechaReporte);
+			Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(fechaReporte, 1));
 
-		Query query = em.getEm().createQuery(
-				("SELECT SUM(dh.monto) FROM DebeHaber dh WHERE dh.idMoneda =:idMoneda AND dh.tipo = :tipo AND dh.fecha BETWEEN :desde AND :hasta"));
-		query.setParameter("idMoneda", idMoneda);
-		query.setParameter("tipo", tipoDebeHaber);
-		query.setParameter("desde", desde);
-		query.setParameter("hasta", hasta);
+			Query query = em.getEm().createQuery(
+					("SELECT SUM(dh.monto) FROM DebeHaber dh WHERE dh.idMoneda =:idMoneda AND dh.tipo = :tipo AND dh.fecha BETWEEN :desde AND :hasta"));
+			query.setParameter("idMoneda", idMoneda);
+			query.setParameter("tipo", tipoDebeHaber);
+			query.setParameter("desde", desde);
+			query.setParameter("hasta", hasta);
 
-		return (BigDecimal) query.getSingleResult();
+			return (BigDecimal) query.getSingleResult();
+		} else {
+			List<EstadoCuentaBancaria> estados = new ArrayList<>();
+			estados.add(EstadoCuentaBancaria.ACTIVO);
+			estados.add(EstadoCuentaBancaria.CONGELADO);
+			QueryParameter queryParameter = QueryParameter.with("estado", estados).and("idMoneda", idMoneda);
+			List<CuentaBancaria> cuentasBancarias = cuentaBancariaDAO
+					.findByNamedQuery(CuentaBancaria.findByEstadoAndMoneda, queryParameter.parameters());
+
+			BigDecimal total = BigDecimal.ZERO;
+			for (CuentaBancaria cta : cuentasBancarias) {
+				if (tipoDebeHaber.equals(TipoDebeHaber.DEBE)) {
+					if (cta.getSaldo().compareTo(BigDecimal.ZERO) < 0) {
+						break;
+					}
+				} else {
+					if (cta.getSaldo().compareTo(BigDecimal.ZERO) >= 0) {
+						break;
+					}
+				}
+
+				total = total.add(cta.getSaldo());
+			}
+			return total;
+		}
 	}
 
 	@Override
