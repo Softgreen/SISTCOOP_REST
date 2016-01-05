@@ -51,12 +51,16 @@ public interface ReportesRest {
 	@GET
 	@Path("patrimonio")
 	@Produces({ "application/xml", "application/json" })
-	public Response reportePatrimonio(@QueryParam("idMoneda") BigInteger idMoneda,
-			@QueryParam("fecha") Long fecha);
-	
+	public Response reportePatrimonio(@QueryParam("idMoneda") BigInteger idMoneda, @QueryParam("fecha") Long fecha);
+
 	@GET
 	@Path("utilidad")
 	@Produces({ "application/xml", "application/json" })
 	public Response reporteUtilidad(@QueryParam("idMoneda") BigInteger idMoneda, @QueryParam("fecha") Long fecha);
+
+	@GET
+	@Path("/utilidad/historial")
+	@Produces({ "application/xml", "application/json" })
+	public Response reporteUtilidadHistorial(@QueryParam("desde") Long desde, @QueryParam("hasta") Long hasta);
 
 }

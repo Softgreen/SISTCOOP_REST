@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -20,13 +19,13 @@ import javax.persistence.Query;
 import org.sistemafinanciero.dao.DAO;
 import org.sistemafinanciero.dao.QueryParameter;
 import org.sistemafinanciero.entity.CuentaBancaria;
-import org.sistemafinanciero.entity.CuentaBancariaView;
 import org.sistemafinanciero.entity.DebeHaber;
 import org.sistemafinanciero.entity.Moneda;
 import org.sistemafinanciero.entity.PersonaJuridica;
 import org.sistemafinanciero.entity.PersonaNatural;
 import org.sistemafinanciero.entity.Socio;
 import org.sistemafinanciero.entity.TipoDocumento;
+import org.sistemafinanciero.entity.Utilidad;
 import org.sistemafinanciero.entity.type.EstadoCuentaBancaria;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
 import org.sistemafinanciero.entity.type.TipoPersona;
@@ -47,6 +46,9 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 
 	@Inject
 	private DAO<Object, DebeHaber> debeHaberDAO;
+
+	@Inject
+	private DAO<Object, Utilidad> utilidadDAO;
 
 	@Inject
 	private EntityManagerProducer em;
@@ -141,8 +143,8 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 			estados.add(EstadoCuentaBancaria.ACTIVO);
 			estados.add(EstadoCuentaBancaria.CONGELADO);
 			QueryParameter queryParameter = QueryParameter.with("estado", estados);
-			List<CuentaBancaria> cuentasBancarias = cuentaBancariaDAO
-					.findByNamedQuery(CuentaBancaria.findByEstado, queryParameter.parameters());
+			List<CuentaBancaria> cuentasBancarias = cuentaBancariaDAO.findByNamedQuery(CuentaBancaria.findByEstado,
+					queryParameter.parameters());
 
 			List<DebeHaber> list = new ArrayList<>();
 			Calendar calendar = Calendar.getInstance();
@@ -197,7 +199,7 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 				list.add(debeHaber);
 			}
 			return list;
-		}		
+		}
 	}
 
 	@Override
@@ -376,6 +378,18 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 		utilidad = caja.add(bancos).add(ctasPorCobrar).subtract(ctasPorPagar).subtract(patrimonio.abs())
 				.subtract(montoEgresoUtilidad.abs());
 		return utilidad;
+	}
+
+	@Override
+	public List<Utilidad> getUtilidadHistorial(Date desdeReporte, Date hastaReporte) {
+		Date desde = DateUtils.getDateIn00Time(desdeReporte);
+		Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(hastaReporte, 1));
+
+		QueryParameter queryParameter = QueryParameter.with("desde", desde).and("hasta", hasta);
+		List<Utilidad> utilidades = utilidadDAO.findByNamedQuery(Utilidad.findByDesdeHasta,
+				queryParameter.parameters());
+		
+		return utilidades;
 	}
 
 }

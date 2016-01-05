@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.sistemafinanciero.entity.DebeHaber;
+import org.sistemafinanciero.entity.Utilidad;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
 import org.sistemafinanciero.rest.ReportesRest;
 import org.sistemafinanciero.service.nt.ReportesServiceNT;
@@ -82,7 +83,7 @@ public class ReportesRestService implements ReportesRest {
 		if (firstDate.compareTo(secondDate) == 0) {
 			fechaReporte = null;
 		}
-		
+
 		List<DebeHaber> listDebe = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.DEBE);
 		List<DebeHaber> listHaber = reportesServiceNT.getDebeHaber(fechaReporte, TipoDebeHaber.HABER);
 		if (fecha != null) {
@@ -90,7 +91,7 @@ public class ReportesRestService implements ReportesRest {
 		} else {
 			fechaReporte = Calendar.getInstance().getTime();
 		}
-		
+
 		/** obteniendo la moneda y dando formato **/
 		NumberFormat df1 = NumberFormat.getCurrencyInstance();
 		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
@@ -344,7 +345,7 @@ public class ReportesRestService implements ReportesRest {
 		if (firstDate.compareTo(secondDate) == 0) {
 			fechaReporte = null;
 		}
-		
+
 		BigDecimal result = reportesServiceNT.getDebeHaberTotal(fechaReporte, idMoneda, tipoDebeHaber);
 		Response response = Response.status(Response.Status.OK).entity(result).build();
 		return response;
@@ -410,6 +411,16 @@ public class ReportesRestService implements ReportesRest {
 			fechaReporte = new Date(fecha);
 		}
 		BigDecimal result = reportesServiceNT.getTotalUtilidad(idMoneda, fechaReporte);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
+	}
+
+	@Override
+	public Response reporteUtilidadHistorial(Long desde, Long hasta) {
+		Date desdeReporte = new Date(desde);
+		Date hastaReporte = new Date(hasta);
+
+		List<Utilidad> result = reportesServiceNT.getUtilidadHistorial(desdeReporte, hastaReporte);
 		Response response = Response.status(Response.Status.OK).entity(result).build();
 		return response;
 	}
