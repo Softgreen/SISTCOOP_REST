@@ -635,9 +635,10 @@ public class EmailSessionBean {
                 mimeMessage.setSender(iaSender);
 
                 SimpleDateFormat format = new SimpleDateFormat("MMMM 'del' yyyy", new Locale("es", "ES"));
-                Date fecha = Calendar.getInstance().getTime();
-                mimeMessage.setSubject(subject + format.format(fecha));
-
+                Calendar fecha = Calendar.getInstance();
+                fecha.add(Calendar.MONTH, -1);
+            
+                mimeMessage.setSubject(subject + format.format(fecha.getTime()));
                 mimeMessage.setRecipient(Message.RecipientType.TO, iaRecipient);
                 mimeMessage.setContent(mimeMultipart);
 
