@@ -67,6 +67,7 @@ public class Utilidad implements Serializable {
 	private BigDecimal utilidadEuros;
 
 	private BigDecimal utilidadTotal;
+	private BigDecimal utilidadPorDia;
 
 	@XmlElement(name = "id")
 	@Id
@@ -318,6 +319,16 @@ public class Utilidad implements Serializable {
 
 	public void setUtilidadTotal(BigDecimal utilidadTotal) {
 		this.utilidadTotal = utilidadTotal;
+	}
+
+	@XmlElement
+	@Column(name = "UTILIDAD_POR_DIA", nullable = false, precision = 18)
+	public BigDecimal getUtilidadPorDia() {
+		return utilidadPorDia;
+	}
+
+	public void setUtilidadPorDia(BigDecimal utilidadPorDia) {
+		this.utilidadPorDia = utilidadPorDia;
 	}
 
 }
