@@ -38,13 +38,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.poi.hssf.record.FnGroupCountRecord;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.sistemafinanciero.entity.Agencia;
@@ -68,6 +66,7 @@ import org.sistemafinanciero.exception.RollbackFailureException;
 import org.sistemafinanciero.mail.EmailSessionBean;
 import org.sistemafinanciero.rest.CuentaBancariaREST;
 import org.sistemafinanciero.rest.Jsend;
+import org.sistemafinanciero.rest.dto.CapitalizacionDTO;
 import org.sistemafinanciero.rest.dto.CuentaBancariaDTO;
 import org.sistemafinanciero.rest.dto.TitularDTO;
 import org.sistemafinanciero.service.nt.AgenciaServiceNT;
@@ -88,7 +87,6 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Font.FontFamily;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
@@ -1604,6 +1602,18 @@ public class CuentaBancariaRESTService implements CuentaBancariaREST {
 		document.close();
 				
 		return Response.ok(outputStream.toByteArray()).type("application/pdf").build();					
+	}
+
+	@Override
+	public Response getDatosDeCapitalizacion(BigInteger id) {
+		CapitalizacionDTO capitalizacion = cuentaBancariaServiceNT.getDatosDeCapitalizacion(id);
+		return Response.status(Status.OK).entity(capitalizacion).build();
+	}
+
+	@Override
+	public Response capitalizarCuentaPersonal(BigInteger id) {
+		boolean result = cuentaBancariaServiceTS.capitalizar(id);
+		return Response.status(Status.OK).entity(result).build();
 	}
 
 }

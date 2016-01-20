@@ -58,4 +58,6 @@ public interface CuentaBancariaServiceTS extends AbstractServiceTS<CuentaBancari
 	
 	public void descongelarCheque(BigInteger numeroChequeUnico) throws NonexistentEntityException, RollbackFailureException;
 
+	public boolean capitalizar(BigInteger id);
+
 }

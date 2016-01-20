@@ -229,4 +229,16 @@ public interface CuentaBancariaREST {
 	@Produces({ "application/xml", "application/json" })
 	public Response enviarEstadoCuentaExcel(@PathParam("id") BigInteger idCuentaBancaria, @QueryParam("desde") Long desde, @QueryParam("hasta") Long hasta);
 	
+	
+	/**CAPITALIZACION**/
+
+	@GET
+	@Path("/{id}/capitalizacion/datos")
+	public Response getDatosDeCapitalizacion(@PathParam("id") BigInteger id);
+
+	@POST
+	@Path("/{id}/capitalizacion/capitalizar")
+	@Produces({ "application/xml", "application/json" })
+	public Response capitalizarCuentaPersonal(@PathParam("id") BigInteger id);
+	
 }

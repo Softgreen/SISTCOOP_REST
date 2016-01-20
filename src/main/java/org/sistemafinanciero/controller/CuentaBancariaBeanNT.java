@@ -1,5 +1,6 @@
 package org.sistemafinanciero.controller;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import org.sistemafinanciero.entity.Beneficiario;
 import org.sistemafinanciero.entity.Cheque;
 import org.sistemafinanciero.entity.Chequera;
 import org.sistemafinanciero.entity.CuentaBancaria;
+import org.sistemafinanciero.entity.CuentaBancariaInteresGenera;
 import org.sistemafinanciero.entity.CuentaBancariaView;
 import org.sistemafinanciero.entity.EstadocuentaBancariaView;
 import org.sistemafinanciero.entity.PersonaNatural;
@@ -34,6 +36,7 @@ import org.sistemafinanciero.entity.Titular;
 import org.sistemafinanciero.entity.type.EstadoCuentaBancaria;
 import org.sistemafinanciero.entity.type.TipoCuentaBancaria;
 import org.sistemafinanciero.entity.type.TipoPersona;
+import org.sistemafinanciero.rest.dto.CapitalizacionDTO;
 import org.sistemafinanciero.service.nt.CuentaBancariaServiceNT;
 import org.sistemafinanciero.service.nt.PersonaNaturalServiceNT;
 import org.sistemafinanciero.service.nt.TasaInteresServiceNT;
@@ -50,6 +53,9 @@ public class CuentaBancariaBeanNT implements CuentaBancariaServiceNT {
 	@Inject
 	private DAO<Object, CuentaBancariaView> cuentaBancariaViewDAO;
 
+	@Inject
+	private DAO<Object, CuentaBancariaInteresGenera> cuentaBancariaInteresGeneraDAO;
+	
 	@Inject
 	private DAO<Object, Titular> titularDAO;
 
@@ -324,6 +330,31 @@ public class CuentaBancariaBeanNT implements CuentaBancariaServiceNT {
 			break;
 		}		
 		return cheque;
+	}
+
+	@Override
+	public CapitalizacionDTO getDatosDeCapitalizacion(BigInteger id) {
+		QueryParameter queryParameter = QueryParameter.with("idCuentaBancaria", id);
+		List<CuentaBancariaInteresGenera> list = cuentaBancariaInteresGeneraDAO.findByNamedQuery(CuentaBancariaInteresGenera.findInteresesACapitalizar, queryParameter.parameters());
+		if(list.isEmpty()) {			
+			list = cuentaBancariaInteresGeneraDAO.findByNamedQuery(CuentaBancariaInteresGenera.findTodosIntereses, queryParameter.parameters());			
+		}
+		
+		CapitalizacionDTO result = new CapitalizacionDTO();
+		BigDecimal interesTotal = BigDecimal.ZERO;
+		for(int i = 0; i < list.size(); i++) {
+			CuentaBancariaInteresGenera cuentaBancariaInteresGenera = list.get(i);
+			interesTotal = interesTotal.add(cuentaBancariaInteresGenera.getInteresGenerado());
+			if( i == 0 ){
+				result.setDesde(cuentaBancariaInteresGenera.getFecha());
+			}
+			if( i == list.size() -1 ) {
+				result.setHasta(cuentaBancariaInteresGenera.getFecha());
+			}
+		}
+		result.setMonto(interesTotal);
+		
+		return result;
 	}
 
 }

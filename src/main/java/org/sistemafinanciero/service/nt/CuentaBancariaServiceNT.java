@@ -16,6 +16,7 @@ import org.sistemafinanciero.entity.Titular;
 import org.sistemafinanciero.entity.type.EstadoCuentaBancaria;
 import org.sistemafinanciero.entity.type.TipoCuentaBancaria;
 import org.sistemafinanciero.entity.type.TipoPersona;
+import org.sistemafinanciero.rest.dto.CapitalizacionDTO;
 
 @Remote
 public interface CuentaBancariaServiceNT extends AbstractServiceNT<CuentaBancariaView> {
@@ -60,5 +61,7 @@ public interface CuentaBancariaServiceNT extends AbstractServiceNT<CuentaBancari
 	public CuentaBancariaView findByNumeroCheque(BigInteger numeroChequeUnico);
 
 	public Cheque getChequeByNumeroUnico(BigInteger numeroChequeUnico);
+
+	public CapitalizacionDTO getDatosDeCapitalizacion(BigInteger id);
 	
 }

@@ -25,85 +25,109 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "CUENTA_BANCARIA_INTERES_GENERA", schema = "C##BDSISTEMAFINANCIERO")
-@NamedQueries({ @NamedQuery(name = CuentaBancariaInteresGenera.findByIdAndDate, query = "SELECT c FROM CuentaBancariaInteresGenera c WHERE c.cuentaBancaria.idCuentaBancaria = :idCuentaBancaria AND c.fecha BETWEEN :desde AND :hasta") })
+@NamedQueries({
+		@NamedQuery(name = CuentaBancariaInteresGenera.findByIdAndDate, query = "SELECT c FROM CuentaBancariaInteresGenera c WHERE c.cuentaBancaria.idCuentaBancaria = :idCuentaBancaria AND c.fecha BETWEEN :desde AND :hasta"),
+		@NamedQuery(name = CuentaBancariaInteresGenera.findInteresesACapitalizar, query = "SELECT cbig1 FROM CuentaBancariaInteresGenera cbig1 WHERE cbig1.cuentaBancaria.idCuentaBancaria = :idCuentaBancaria AND cbig1.fecha > (SELECT MAX(cbig2.fecha) FROM CuentaBancariaInteresGenera cbig2 WHERE cbig2.cuentaBancaria.idCuentaBancaria = :idCuentaBancaria AND cbig2.esUltimaCapitalizacion = TRUE) ORDER BY cbig1.fecha ASC"),
+		@NamedQuery(name = CuentaBancariaInteresGenera.findTodosIntereses, query = "SELECT cbig1 FROM CuentaBancariaInteresGenera cbig1 WHERE cbig1.cuentaBancaria.idCuentaBancaria = :idCuentaBancaria ORDER BY cbig1.fecha ASC")})
 public class CuentaBancariaInteresGenera implements java.io.Serializable {
 
-    /**
+	/**
 	 * 
 	 */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public final static String findByIdAndDate = "CuentaBancariaInteresGenera.findByIdAndDate";
+	public final static String findByIdAndDate = "CuentaBancariaInteresGenera.findByIdAndDate";
+	public final static String findInteresesACapitalizar = "CuentaBancariaInteresGenera.findIntereses";
+	public final static String findTodosIntereses = "CuentaBancariaInteresGenera.findTodosIntereses";
 
-    private BigInteger idCuentaBancariaInteresGen;
-    private CuentaBancaria cuentaBancaria;
-    private BigDecimal capital;
-    private BigDecimal interesGenerado;
-    private Date fecha;
+	private BigInteger idCuentaBancariaInteresGen;
+	private CuentaBancaria cuentaBancaria;
+	private BigDecimal capital;
+	private BigDecimal interesGenerado;
+	private Date fecha;
 
-    public CuentaBancariaInteresGenera() {
-    }
+	private Integer esUltimaCapitalizacion;
 
-    public CuentaBancariaInteresGenera(BigInteger idCuentaBancariaInteresGen) {
-        this.idCuentaBancariaInteresGen = idCuentaBancariaInteresGen;
-    }
+	public CuentaBancariaInteresGenera() {
+	}
 
-    public CuentaBancariaInteresGenera(BigInteger idCuentaBancariaInteresGen, CuentaBancaria cuentaBancaria,
-            BigDecimal capital, BigDecimal interesGenerado, Date fecha) {
-        this.idCuentaBancariaInteresGen = idCuentaBancariaInteresGen;
-        this.cuentaBancaria = cuentaBancaria;
-        this.capital = capital;
-        this.interesGenerado = interesGenerado;
-        this.fecha = fecha;
-    }
+	public CuentaBancariaInteresGenera(BigInteger idCuentaBancariaInteresGen) {
+		this.idCuentaBancariaInteresGen = idCuentaBancariaInteresGen;
+	}
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    @Column(name = "ID_CUENTA_BANCARIA_INTERES_GEN", unique = true, nullable = false, precision = 22, scale = 0)
-    public BigInteger getIdCuentaBancariaInteresGen() {
-        return this.idCuentaBancariaInteresGen;
-    }
+	public CuentaBancariaInteresGenera(BigInteger idCuentaBancariaInteresGen, CuentaBancaria cuentaBancaria,
+			BigDecimal capital, BigDecimal interesGenerado, Date fecha) {
+		this.idCuentaBancariaInteresGen = idCuentaBancariaInteresGen;
+		this.cuentaBancaria = cuentaBancaria;
+		this.capital = capital;
+		this.interesGenerado = interesGenerado;
+		this.fecha = fecha;
+	}
 
-    public void setIdCuentaBancariaInteresGen(BigInteger idCuentaBancariaInteresGen) {
-        this.idCuentaBancariaInteresGen = idCuentaBancariaInteresGen;
-    }
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@Column(name = "ID_CUENTA_BANCARIA_INTERES_GEN", unique = true, nullable = false, precision = 22, scale = 0)
+	public BigInteger getIdCuentaBancariaInteresGen() {
+		return this.idCuentaBancariaInteresGen;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID_CUENTA_BANCARIA")
-    public CuentaBancaria getCuentaBancaria() {
-        return this.cuentaBancaria;
-    }
+	public void setIdCuentaBancariaInteresGen(BigInteger idCuentaBancariaInteresGen) {
+		this.idCuentaBancariaInteresGen = idCuentaBancariaInteresGen;
+	}
 
-    public void setCuentaBancaria(CuentaBancaria cuentaBancaria) {
-        this.cuentaBancaria = cuentaBancaria;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ID_CUENTA_BANCARIA")
+	public CuentaBancaria getCuentaBancaria() {
+		return this.cuentaBancaria;
+	}
 
-    @Column(name = "CAPITAL", precision = 18)
-    public BigDecimal getCapital() {
-        return this.capital;
-    }
+	public void setCuentaBancaria(CuentaBancaria cuentaBancaria) {
+		this.cuentaBancaria = cuentaBancaria;
+	}
 
-    public void setCapital(BigDecimal capital) {
-        this.capital = capital;
-    }
+	@Column(name = "CAPITAL", precision = 18)
+	public BigDecimal getCapital() {
+		return this.capital;
+	}
 
-    @Column(name = "INTERES_GENERADO", precision = 38)
-    public BigDecimal getInteresGenerado() {
-        return this.interesGenerado;
-    }
+	public void setCapital(BigDecimal capital) {
+		this.capital = capital;
+	}
 
-    public void setInteresGenerado(BigDecimal interesGenerado) {
-        this.interesGenerado = interesGenerado;
-    }
+	@Column(name = "INTERES_GENERADO", precision = 38)
+	public BigDecimal getInteresGenerado() {
+		return this.interesGenerado;
+	}
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "FECHA", length = 7)
-    public Date getFecha() {
-        return this.fecha;
-    }
+	public void setInteresGenerado(BigDecimal interesGenerado) {
+		this.interesGenerado = interesGenerado;
+	}
 
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
+	@Temporal(TemporalType.DATE)
+	@Column(name = "FECHA", length = 7)
+	public Date getFecha() {
+		return this.fecha;
+	}
+
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
+	}
+
+	@Column(name = "ES_ULTIMA_CAPITALIZACION", precision = 38)
+	public Boolean getEsUltimaCapitalizacion() {
+		if (this.esUltimaCapitalizacion != null) {
+			if (this.esUltimaCapitalizacion == 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void setEsUltimaCapitalizacion(Boolean esUltimaCapitalizacion) {
+		if (esUltimaCapitalizacion != null) {
+			this.esUltimaCapitalizacion = (esUltimaCapitalizacion ? 1 : 0);
+		}
+		esUltimaCapitalizacion = null;
+	}	
 
 }

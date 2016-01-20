@@ -35,13 +35,16 @@ import org.sistemafinanciero.entity.PersonaJuridica;
 import org.sistemafinanciero.entity.PersonaNatural;
 import org.sistemafinanciero.entity.Socio;
 import org.sistemafinanciero.entity.Titular;
+import org.sistemafinanciero.entity.TransaccionBancaria;
 import org.sistemafinanciero.entity.type.EstadoCheque;
 import org.sistemafinanciero.entity.type.EstadoCuentaBancaria;
 import org.sistemafinanciero.entity.type.TipoCuentaBancaria;
 import org.sistemafinanciero.entity.type.TipoPersona;
+import org.sistemafinanciero.entity.type.Tipotransaccionbancaria;
 import org.sistemafinanciero.exception.NonexistentEntityException;
 import org.sistemafinanciero.exception.PreexistingEntityException;
 import org.sistemafinanciero.exception.RollbackFailureException;
+import org.sistemafinanciero.rest.dto.CapitalizacionDTO;
 import org.sistemafinanciero.service.nt.CuentaBancariaServiceNT;
 import org.sistemafinanciero.service.nt.PersonaNaturalServiceNT;
 import org.sistemafinanciero.service.nt.TasaInteresServiceNT;
@@ -57,6 +60,9 @@ public class CuentaBancariaBeanTS implements CuentaBancariaServiceTS {
 	@Inject
 	private DAO<Object, CuentaBancaria> cuentaBancariaDAO;
 
+	@Inject
+	private DAO<Object, TransaccionBancaria> transaccionBancariaDAO;
+	
 	@Inject
 	private DAO<Object, PersonaNatural> personaNaturalDAO;
 
@@ -642,6 +648,50 @@ public class CuentaBancariaBeanTS implements CuentaBancariaServiceTS {
 		cheque.setEstado(EstadoCheque.POR_COBRAR);
 		cheque.setFechaCambioEstado(calendar.getTime());
 		chequeDAO.update(cheque);
+	}
+
+	@Override
+	public boolean capitalizar(BigInteger id) {
+		CuentaBancaria cuentaBancaria = cuentaBancariaDAO.find(id);
+		
+		// Buscar Intereses generados
+		QueryParameter queryParameter = QueryParameter.with("idCuentaBancaria", id);
+		List<CuentaBancariaInteresGenera> list = cuentaBancariaInteresGeneraDAO.findByNamedQuery(CuentaBancariaInteresGenera.findInteresesACapitalizar, queryParameter.parameters());			
+		if(list.isEmpty()) {			
+			list = cuentaBancariaInteresGeneraDAO.findByNamedQuery(CuentaBancariaInteresGenera.findTodosIntereses, queryParameter.parameters());			
+		}
+		
+		BigDecimal interesTotal = BigDecimal.ZERO;
+		for(int i = 0; i < list.size(); i++) {
+			CuentaBancariaInteresGenera cuentaBancariaInteresGenera = list.get(i);
+			interesTotal = interesTotal.add(cuentaBancariaInteresGenera.getInteresGenerado());			
+			if( i == list.size() -1 ) {
+				// Actualizar si es la ultima tupla
+				cuentaBancariaInteresGenera.setEsUltimaCapitalizacion(true);
+			}
+		}
+		
+		// Actualizar saldo de cuenta bancaris
+		cuentaBancaria.setSaldo(cuentaBancaria.getSaldo().add(interesTotal));
+		
+		// Insertar el deposito del interes como una transaccion bancaria;
+		TransaccionBancaria transaccionBancaria = new TransaccionBancaria();
+		transaccionBancaria.setIdTransaccionBancaria(null);
+		transaccionBancaria.setNumeroOperacion(null);
+		transaccionBancaria.setHistorialCaja(null);
+		transaccionBancaria.setCuentaBancaria(cuentaBancaria);		
+		transaccionBancaria.setFecha(Calendar.getInstance().getTime());		
+		transaccionBancaria.setHora(Calendar.getInstance().getTime());		
+		transaccionBancaria.setMoneda(cuentaBancaria.getMoneda());
+		transaccionBancaria.setMonto(interesTotal);				
+		transaccionBancaria.setSaldoDisponible(cuentaBancaria.getSaldo());
+		transaccionBancaria.setTipoTransaccion(Tipotransaccionbancaria.DEPOSITO);
+		transaccionBancaria.setObservacion("INTERES GENERADO");
+		transaccionBancaria.setReferencia("INTERES GENERADO");
+		transaccionBancaria.setEstado(true);
+		transaccionBancariaDAO.create(transaccionBancaria);
+		
+		return true;
 	}
 
 }
