@@ -32,7 +32,7 @@ import org.sistemafinanciero.entity.type.TipoPersona;
 @XmlRootElement(name = "debeHaber")
 @XmlAccessorType(XmlAccessType.NONE)
 @NamedQueries({
-        @NamedQuery(name = DebeHaber.findIdMonedaTipoFecha, query = "SELECT d FROM DebeHaber d WHERE d.idMoneda=:idMoneda AND d.tipo=:tipo AND d.fecha = :fecha"),
+        @NamedQuery(name = DebeHaber.findIdMonedaTipoFecha, query = "SELECT d FROM DebeHaber d WHERE d.idMoneda=:idMoneda AND d.tipo=:tipo AND d.fecha = :fecha ORDER BY d.persona"),
         @NamedQuery(name = DebeHaber.findTipoFecha, query = "SELECT d FROM DebeHaber d WHERE d.tipo=:tipo AND d.fecha = :fecha ORDER BY d.persona") })
 public class DebeHaber implements java.io.Serializable {
 
