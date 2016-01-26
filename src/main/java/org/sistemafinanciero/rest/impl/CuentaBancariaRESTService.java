@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.ws.rs.core.Response;
@@ -1001,8 +1002,24 @@ public class CuentaBancariaRESTService implements CuentaBancariaREST {
 
 	@Override
 	public Response cancelarCuentaBancaria(BigInteger id) {
-		// TODO Auto-generated method stub
-		return null;
+		Response result = null;
+		JsonObject model = null;
+		if (id == null) {
+			model = Json.createObjectBuilder().add("message", "Id no valido").build();
+			result = Response.status(Response.Status.BAD_REQUEST).entity(model).build();
+		}
+		try {
+			cuentaBancariaServiceTS.cancelarCuentaBancaria(id);
+			model = Json.createObjectBuilder().add("message", "success").build();
+			result = Response.status(Response.Status.OK).entity(model).build();
+		} catch (RollbackFailureException e) {
+			model = Json.createObjectBuilder().add("message", e.getMessage()).build();
+			result = Response.status(Response.Status.BAD_REQUEST).entity(model).build();
+		} catch (EJBException e) {
+			model = Json.createObjectBuilder().add("message", e.getMessage()).build();
+			result = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(model).build();
+		}
+		return result;
 	}
 
 	@Override

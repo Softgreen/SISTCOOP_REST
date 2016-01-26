@@ -44,7 +44,6 @@ import org.sistemafinanciero.entity.type.Tipotransaccionbancaria;
 import org.sistemafinanciero.exception.NonexistentEntityException;
 import org.sistemafinanciero.exception.PreexistingEntityException;
 import org.sistemafinanciero.exception.RollbackFailureException;
-import org.sistemafinanciero.rest.dto.CapitalizacionDTO;
 import org.sistemafinanciero.service.nt.CuentaBancariaServiceNT;
 import org.sistemafinanciero.service.nt.PersonaNaturalServiceNT;
 import org.sistemafinanciero.service.nt.TasaInteresServiceNT;
