@@ -1,6 +1,7 @@
 package org.sistemafinanciero.controller;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -13,11 +14,13 @@ import javax.inject.Named;
 
 import org.hibernate.Hibernate;
 import org.sistemafinanciero.dao.DAO;
+import org.sistemafinanciero.dao.QueryParameter;
 import org.sistemafinanciero.entity.Agencia;
 import org.sistemafinanciero.entity.BovedaCaja;
 import org.sistemafinanciero.entity.Caja;
 import org.sistemafinanciero.entity.Moneda;
 import org.sistemafinanciero.entity.PendienteCaja;
+import org.sistemafinanciero.entity.PendienteCajaView;
 import org.sistemafinanciero.entity.dto.VoucherPendienteCaja;
 import org.sistemafinanciero.service.nt.PendienteServiceNT;
 
@@ -29,6 +32,24 @@ public class PendienteServiceBeanNT implements PendienteServiceNT {
 
     @Inject
     private DAO<Object, PendienteCaja> pendienteCajaDAO;
+    
+    @Inject
+    private DAO<Object, PendienteCajaView> pendienteCajaViewDAO;
+    
+    @Override
+	public List<PendienteCajaView> findAllView(BigInteger idAgencia) {
+		List<PendienteCajaView> list = null;
+		
+		if (idAgencia == null) {
+            list = pendienteCajaViewDAO.findAll();
+        } else {
+            QueryParameter queryParameter = QueryParameter.with("idAgencia", idAgencia);
+            List<PendienteCajaView> a = pendienteCajaViewDAO.findByNamedQuery(PendienteCajaView.findByIdAgencia, queryParameter.parameters());
+            
+            list = new ArrayList<PendienteCajaView>(a);
+        }
+        return list;
+	}
 
     @Override
     public VoucherPendienteCaja getVoucherPendienteCaja(BigInteger idPendienteCaja) {

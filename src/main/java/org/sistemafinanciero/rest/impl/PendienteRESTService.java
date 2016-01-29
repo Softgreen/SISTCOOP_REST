@@ -7,6 +7,7 @@ import javax.ejb.EJB;
 import javax.ws.rs.core.Response;
 
 import org.sistemafinanciero.entity.PendienteCaja;
+import org.sistemafinanciero.entity.PendienteCajaView;
 import org.sistemafinanciero.entity.dto.VoucherPendienteCaja;
 import org.sistemafinanciero.rest.PendienteREST;
 import org.sistemafinanciero.service.nt.PendienteServiceNT;
@@ -19,6 +20,13 @@ public class PendienteRESTService implements PendienteREST {
 	@Override
 	public Response findAll() {
 		List<PendienteCaja> list = pendienteServiceNT.findAll();
+		Response response = Response.status(Response.Status.OK).entity(list).build();
+		return response;
+	}
+	
+	@Override
+	public Response findAll(BigInteger idAgencia) {
+		List<PendienteCajaView> list = pendienteServiceNT.findAllView(idAgencia);
 		Response response = Response.status(Response.Status.OK).entity(list).build();
 		return response;
 	}
