@@ -61,7 +61,7 @@ public class ReportesRestService implements ReportesRest {
 			fechaReporte = null;
 		}
 
-		List<DebeHaber> list = reportesServiceNT.getDebeHaber(fechaReporte, idMoneda, tipoDebeHaber);
+		List<DebeHaber> list = reportesServiceNT.getDebeHaber(fechaReporte, idMoneda, tipoDebeHaber);			
 		Response response = Response.status(Response.Status.OK).entity(list).build();
 		return response;
 	}

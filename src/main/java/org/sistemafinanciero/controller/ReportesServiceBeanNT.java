@@ -120,7 +120,7 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 				debeHaber
 						.setPersona(
 								isPersonaNatural
-										? personaNatural.getApellidoPaterno() + personaNatural.getApellidoMaterno()
+										? personaNatural.getApellidoPaterno() + " " + personaNatural.getApellidoMaterno()
 												+ ", " + personaNatural.getNombres()
 										: personaJuridica.getRazonSocial());
 
