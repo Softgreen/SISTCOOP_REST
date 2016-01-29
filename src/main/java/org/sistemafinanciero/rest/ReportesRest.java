@@ -20,6 +20,11 @@ public interface ReportesRest {
 			@QueryParam("idMoneda") BigInteger idMoneda);
 
 	@GET
+	@Path("/debeHaber/simplificado")
+	@Produces({ "application/xml", "application/json" })
+	public Response reporteDebeHaberSimplificado(@QueryParam("fecha") Long fecha, @QueryParam("tipo") TipoDebeHaber tipoDebeHaber);
+	
+	@GET
 	@Path("/debeHaber/pdf")
 	@Produces({ "application/xml", "application/json" })
 	public Response reporteDebeHaberPdf(@QueryParam("fecha") Long fecha);

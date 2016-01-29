@@ -65,6 +65,29 @@ public class ReportesRestService implements ReportesRest {
 		Response response = Response.status(Response.Status.OK).entity(list).build();
 		return response;
 	}
+	
+	@Override
+	public Response reporteDebeHaberSimplificado(Long fecha, TipoDebeHaber tipoDebeHaber) {
+		Date fechaReporte = null;
+		if (fecha != null) {
+			fechaReporte = new Date(fecha);
+		} else {
+			fechaReporte = Calendar.getInstance().getTime();
+		}
+
+		// verificar si se quiere reporte de hoy
+		DateTime first = DateTime.now();
+		DateTime second = new DateTime(fechaReporte);
+		LocalDate firstDate = first.toLocalDate();
+		LocalDate secondDate = second.toLocalDate();
+		if (firstDate.compareTo(secondDate) == 0) {
+			fechaReporte = null;
+		}
+
+		List<DebeHaber> list = reportesServiceNT.getDebeHaber(fechaReporte, tipoDebeHaber);
+		Response response = Response.status(Response.Status.OK).entity(list).build();
+		return response;
+	}
 
 	@Override
 	public Response reporteDebeHaberPdf(Long fecha) {
