@@ -1390,7 +1390,7 @@ public class CuentaBancariaRESTService implements CuentaBancariaREST {
 				emails.add(email);			
 		}	
 		CuentaBancariaView cuentaBancariaView = cuentaBancariaServiceNT.findById(idCuentaBancaria);
-		List<EstadocuentaBancariaView> list = cuentaBancariaServiceNT.getEstadoCuenta(idCuentaBancaria, dateDesde, dateHasta, true);
+		List<EstadocuentaBancariaView> list = cuentaBancariaServiceNT.getEstadoCuenta(idCuentaBancaria, dateDesde, dateHasta, true);	
 		
 		/**obteniendo la moneda y dando formato**/
 		Moneda moneda = monedaServiceNT.findById(cuentaBancariaView.getIdMoneda());
@@ -1573,7 +1573,7 @@ public class CuentaBancariaRESTService implements CuentaBancariaREST {
 		table.addCell(cellMontoCabecera);
 		table.addCell(cellSaldoDisponibleCabecera);
 		//table.addCell(cellEstado);
-
+		
 		for (EstadocuentaBancariaView estadocuentaBancariaView : list) {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 			String fecHoraFormat = sdf.format(estadocuentaBancariaView.getHora());
@@ -1583,7 +1583,7 @@ public class CuentaBancariaRESTService implements CuentaBancariaREST {
 				table.addCell(cellFechaHora);
 				PdfPCell cellTipoTrasaccion = new PdfPCell(new Paragraph(estadocuentaBancariaView.getTipoTransaccionTransferencia(), fontTableCuerpo));
 				table.addCell(cellTipoTrasaccion);
-				PdfPCell cellNumOperacion = new PdfPCell(new Paragraph(estadocuentaBancariaView.getNumeroOperacion().toString(), fontTableCuerpo));
+				PdfPCell cellNumOperacion = new PdfPCell(new Paragraph(estadocuentaBancariaView.getNumeroOperacion() != null ? estadocuentaBancariaView.getNumeroOperacion().toString() : "", fontTableCuerpo));
 				table.addCell(cellNumOperacion);
 				PdfPCell cellReferencia = new PdfPCell(new Paragraph(estadocuentaBancariaView.getReferencia(), fontTableCuerpo));
 				table.addCell(cellReferencia);
@@ -1592,7 +1592,8 @@ public class CuentaBancariaRESTService implements CuentaBancariaREST {
 				table.addCell(cellMonto);
 				PdfPCell cellSaldoDisponible = new PdfPCell(new Paragraph(df1.format(estadocuentaBancariaView.getSaldoDisponible()), fontTableCuerpo));
 				cellSaldoDisponible.setHorizontalAlignment(Element.ALIGN_RIGHT);
-				table.addCell(cellSaldoDisponible);
+				table.addCell(cellSaldoDisponible);			
+				
 				/*if (estadocuentaBancariaView.getEstado()) {
 					PdfPCell cellEstadoActivo = new PdfPCell(new Paragraph("Activo", fontTableCuerpo));
 					table.addCell(cellEstadoActivo);
