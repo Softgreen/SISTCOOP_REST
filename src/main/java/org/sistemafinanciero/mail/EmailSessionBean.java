@@ -555,16 +555,17 @@ public class EmailSessionBean {
     public void sendMailPdf(CuentaBancariaView cuentaBancariaView, List<EstadocuentaBancariaView> list,
             List<String> emails, Date desde, Date hasta) {
         mailMessage = "Buen día, el siguiente estado de cuenta corresponde";
-
+        
         // dando formato a las fechas
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String fechaDesde = df.format(desde);
-        String fechaHasta = df.format(hasta);
+        //String fechaHasta = df.format(hasta);
+        Date hasta_menos_un_dia = sumarRestarDiasFecha(hasta, -1);
 
         if (desde == null || hasta == null)
             mailMessage = mailMessage + " los ultimos 30 dias.";
         else
-            mailMessage = mailMessage + " al perido desde: " + fechaDesde + " hasta: " + fechaHasta;
+            mailMessage = mailMessage + " al perido desde: " + fechaDesde + " hasta: " + hasta_menos_un_dia;
 
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
@@ -638,7 +639,9 @@ public class EmailSessionBean {
                 Calendar fecha = Calendar.getInstance();
                 fecha.add(Calendar.MONTH, -1);
             
-                mimeMessage.setSubject(subject + format.format(fecha.getTime()));
+                String mensaje = format.format(fecha.getTime());
+                
+                mimeMessage.setSubject(subject + " " + mensaje.toUpperCase());
                 mimeMessage.setRecipient(Message.RecipientType.TO, iaRecipient);
                 mimeMessage.setContent(mimeMultipart);
 
@@ -762,6 +765,13 @@ public class EmailSessionBean {
                 }
             }
         }
+    }
+    
+    public Date sumarRestarDiasFecha(Date fecha, int dias){
+    	Calendar calendar = Calendar.getInstance();
+    	calendar.setTime(fecha); // Configuramos la fecha que se recibe
+    	calendar.add(Calendar.DAY_OF_YEAR, dias);  // numero de días a añadir, o restar en caso de días<0
+    	return calendar.getTime(); // Devuelve el objeto Date con los nuevos días añadidos	
     }
 
 }
