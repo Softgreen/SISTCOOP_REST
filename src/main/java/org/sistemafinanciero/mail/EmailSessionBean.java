@@ -555,16 +555,19 @@ public class EmailSessionBean {
     public void sendMailPdf(CuentaBancariaView cuentaBancariaView, List<EstadocuentaBancariaView> list,
             List<String> emails, Date desde, Date hasta) {
         mailMessage = "Buen día, el siguiente estado de cuenta corresponde";
-
+        
         // dando formato a las fechas
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String fechaDesde = df.format(desde);
-        String fechaHasta = df.format(hasta);
+        Date hasta_menos_una_hora = sumarRestarHorasFecha(hasta, -4);
+        String fechaHastaMenosUnaHora = df.format(hasta_menos_una_hora);
+        //String fechaHasta = df.format(hasta);
+        
 
         if (desde == null || hasta == null)
             mailMessage = mailMessage + " los ultimos 30 dias.";
         else
-            mailMessage = mailMessage + " al perido desde: " + fechaDesde + " hasta: " + fechaHasta;
+            mailMessage = mailMessage + " al perido desde: " + fechaDesde + " hasta: " + fechaHastaMenosUnaHora;
 
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
@@ -637,8 +640,10 @@ public class EmailSessionBean {
                 SimpleDateFormat format = new SimpleDateFormat("MMMM 'del' yyyy", new Locale("es", "ES"));
                 Calendar fecha = Calendar.getInstance();
                 fecha.add(Calendar.MONTH, -1);
+                String mensaje = format.format(fecha.getTime());
             
-                mimeMessage.setSubject(subject + format.format(fecha.getTime()));
+                mimeMessage.setSubject(subject + mensaje.toUpperCase());
+                //mimeMessage.setSubject(subject + format.format(fecha.getTime()));
                 mimeMessage.setRecipient(Message.RecipientType.TO, iaRecipient);
                 mimeMessage.setContent(mimeMultipart);
 
@@ -762,6 +767,22 @@ public class EmailSessionBean {
                 }
             }
         }
+    }
+    
+    // Suma o resta los dias recibidos a la fecha
+    public Date sumarRestarDiasFecha(Date fecha, int dias){
+    	Calendar calendar = Calendar.getInstance();
+    	calendar.setTime(fecha); // Configuramos la fecha que se recibe
+    	calendar.add(Calendar.DAY_OF_YEAR, dias);  // numero de dÃ­as a aÃ±adir, o restar en caso de dÃ­as<0
+    	return calendar.getTime(); // Devuelve el objeto Date con los nuevos dÃ­as aÃ±adidos	
+    }
+    
+    // Suma o resta las horas recibidos a la fecha  
+    public Date sumarRestarHorasFecha(Date fecha, int horas){
+         Calendar calendar = Calendar.getInstance();
+         calendar.setTime(fecha); // Configuramos la fecha que se recibe
+         calendar.add(Calendar.HOUR, horas);  // numero de horas a añadir, o restar en caso de horas<0
+         return calendar.getTime(); // Devuelve el objeto Date con las nuevas horas añadidas
     }
 
 }
