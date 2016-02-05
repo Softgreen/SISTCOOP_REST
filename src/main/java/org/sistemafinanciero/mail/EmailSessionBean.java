@@ -200,7 +200,7 @@ public class EmailSessionBean {
 
             Paragraph message = new Paragraph();
             message.setAlignment(Element.ALIGN_JUSTIFIED);
-            Chunk textoMessaje = new Chunk("No existen transacciones en este periodo de tiempo...");
+            Chunk textoMessaje = new Chunk("No existen transacciones en el periodo elegido...");
             message.add(textoMessaje);
 
             try {
@@ -554,20 +554,20 @@ public class EmailSessionBean {
     @Asynchronous
     public void sendMailPdf(CuentaBancariaView cuentaBancariaView, List<EstadocuentaBancariaView> list,
             List<String> emails, Date desde, Date hasta) {
-        mailMessage = "Buen día, el siguiente estado de cuenta corresponde";
+        mailMessage = "Buen Día Sr. (a), ";
         
         // dando formato a las fechas
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-        String fechaDesde = df.format(desde);
-        Date hasta_menos_una_hora = sumarRestarHorasFecha(hasta, -4);
-        String fechaHastaMenosUnaHora = df.format(hasta_menos_una_hora);
+        //String fechaDesde = df.format(desde);
+        //--Date hasta_menos_horas = sumarRestarHorasFecha(hasta, -4);
+        //--String fechaHastaMenosHoras = df.format(hasta_menos_horas);
         //String fechaHasta = df.format(hasta);
         
 
         if (desde == null || hasta == null)
             mailMessage = mailMessage + " los ultimos 30 dias.";
         else
-            mailMessage = mailMessage + " al perido desde: " + fechaDesde + " hasta: " + fechaHastaMenosUnaHora;
+            mailMessage = mailMessage + " le brindamos su estado de cuenta correspondiente...";
 
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
