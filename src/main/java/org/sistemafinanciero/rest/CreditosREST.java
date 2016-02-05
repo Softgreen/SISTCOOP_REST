@@ -14,8 +14,8 @@ import javax.ws.rs.core.Response;
 import org.sistemafinanciero.entity.SobreGiro;
 import org.sistemafinanciero.entity.type.EstadoSobreGiro;
 
-@Path("/sobreGiros")
-public interface SobreGiroREST {
+@Path("/creditos")
+public interface CreditosREST {
 
     @GET
     @Produces({ "application/xml", "application/json" })
@@ -23,6 +23,11 @@ public interface SobreGiroREST {
             @QueryParam("filterText") String filterText, @QueryParam("offset") Integer offset,
             @QueryParam("limit") Integer limit);
 
+    @GET
+	@Path("/count")
+	@Produces({ "application/xml", "application/json" })
+	public Response count();
+    
     @GET
     @Path("/{id}")
     @Produces({ "application/xml", "application/json" })
