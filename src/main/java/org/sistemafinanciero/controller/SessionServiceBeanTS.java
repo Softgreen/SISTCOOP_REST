@@ -2,7 +2,6 @@ package org.sistemafinanciero.controller;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -324,14 +323,14 @@ public class SessionServiceBeanTS implements SessionServiceTS {
             if (monedaTransaccion.equals(monedaBoveda)) {
                 BigDecimal saldoActual = bovedaCaja.getSaldo();
                 BigDecimal saldoFinal = saldoActual.add(monto);
-                if (saldoFinal.compareTo(BigDecimal.ZERO) >= 0) {
+                //if (saldoFinal.compareTo(BigDecimal.ZERO) >= 0) {
                     bovedaCaja.setSaldo(saldoFinal);
                     bovedaCajaDAO.update(bovedaCaja);
                     commit = true;
-                } else {
-                    throw new RollbackFailureException(
-                            "Saldo menor a cero, no se puede modificar saldo de caja");
-                }
+                //} else {
+                //    throw new RollbackFailureException(
+                //            "Saldo menor a cero, no se puede modificar saldo de caja");
+                //}
                 break;
             }
         }
@@ -354,13 +353,13 @@ public class SessionServiceBeanTS implements SessionServiceTS {
             if (monedaTransaccion.equals(monedaBoveda)) {
                 BigDecimal saldoActual = bovedaCaja.getSaldo();
                 BigDecimal saldoFinal = saldoActual.add(monto);
-                if (saldoFinal.compareTo(BigDecimal.ZERO) >= 0) {
+                //if (saldoFinal.compareTo(BigDecimal.ZERO) >= 0) {
                     bovedaCaja.setSaldo(saldoFinal);
                     bovedaCajaDAO.update(bovedaCaja);
-                } else {
-                    throw new RollbackFailureException(
-                            "Saldo menor a cero, no se puede modificar saldo de caja");
-                }
+                //} else {
+                //    throw new RollbackFailureException(
+                //            "Saldo menor a cero, no se puede modificar saldo de caja");
+                //}
                 break;
             }
         }
@@ -570,7 +569,11 @@ public class SessionServiceBeanTS implements SessionServiceTS {
             Moneda moneda = bovedaCaja.getBoveda().getMoneda();
             for (GenericMonedaDetalle detalle : detalleCaja) {
                 if (moneda.equals(detalle.getMoneda())) {
-                    if (bovedaCaja.getSaldo().compareTo(detalle.getTotal()) != 0) {
+                	if (bovedaCaja.getSaldo().compareTo(BigDecimal.ZERO) < 0) {
+                        throw new RollbackFailureException(
+                                "El saldo de caja no puede ser negativo");
+                    }
+                	if (bovedaCaja.getSaldo().compareTo(detalle.getTotal()) != 0) {
                         throw new RollbackFailureException(
                                 "El detalle enviado y el saldo en boveda no coinciden");
                     }

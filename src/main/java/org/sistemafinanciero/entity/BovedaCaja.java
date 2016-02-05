@@ -13,7 +13,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.DecimalMin;
 
 import com.sun.istack.NotNull;
 
@@ -77,7 +76,7 @@ public class BovedaCaja implements java.io.Serializable {
 	}
 
 	@NotNull
-	@DecimalMin(value = "0", inclusive = true)
+	//@DecimalMin(value = "0", inclusive = true)
 	@Column(name = "SALDO", nullable = false, precision = 18)
 	public BigDecimal getSaldo() {
 		return this.saldo;
