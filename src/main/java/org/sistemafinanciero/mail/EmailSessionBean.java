@@ -419,8 +419,8 @@ public class EmailSessionBean {
                     PdfPCell cellTipoTrasaccion = new PdfPCell(new Paragraph(
                             estadocuentaBancariaView.getTipoTransaccionTransferencia(), fontTableCuerpo));
                     table.addCell(cellTipoTrasaccion);
-                    PdfPCell cellNumOperacion = new PdfPCell(new Paragraph(estadocuentaBancariaView
-                            .getNumeroOperacion().toString(), fontTableCuerpo));
+                    PdfPCell cellNumOperacion = new PdfPCell(new Paragraph(
+                    		estadocuentaBancariaView.getNumeroOperacion() != null ? estadocuentaBancariaView.getNumeroOperacion().toString(): null, fontTableCuerpo));
                     table.addCell(cellNumOperacion);
                     PdfPCell cellReferencia = new PdfPCell(new Paragraph(
                             estadocuentaBancariaView.getReferencia(), fontTableCuerpo));
