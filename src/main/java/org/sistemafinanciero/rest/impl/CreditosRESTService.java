@@ -4,20 +4,17 @@ import java.math.BigInteger;
 import java.util.List;
 
 import javax.ejb.EJB;
-import javax.ejb.EJBException;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
 import org.sistemafinanciero.entity.HistorialPagoSobreGiro;
 import org.sistemafinanciero.entity.SobreGiro;
 import org.sistemafinanciero.entity.type.EstadoSobreGiro;
-import org.sistemafinanciero.exception.RollbackFailureException;
-import org.sistemafinanciero.rest.Jsend;
-import org.sistemafinanciero.rest.SobreGiroREST;
+import org.sistemafinanciero.rest.CreditosREST;
 import org.sistemafinanciero.service.nt.SobreGiroServiceNT;
 import org.sistemafinanciero.service.ts.SobreGiroServiceTS;
 
-public class SobreGiroRESTService implements SobreGiroREST {
+public class CreditosRESTService implements CreditosREST {
 
     @EJB
     private SobreGiroServiceNT sobreGiroServiceNT;
@@ -36,6 +33,13 @@ public class SobreGiroRESTService implements SobreGiroREST {
         return response;
     }
 
+    @Override
+	public Response count() {
+		int count = sobreGiroServiceNT.count();
+		Response response = Response.status(Response.Status.OK).entity(count).build();
+		return response;
+	}
+    
     @Override
     public Response findById(BigInteger id) {
         SobreGiro sobreGiro = sobreGiroServiceNT.findById(id);
