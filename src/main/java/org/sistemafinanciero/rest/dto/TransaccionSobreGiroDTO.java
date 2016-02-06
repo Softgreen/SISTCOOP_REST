@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.sistemafinanciero.entity.type.TipoPersona;
+
 @XmlRootElement(name = "transaccionSobreGiroDTO")
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class TransaccionSobreGiroDTO implements Serializable {
@@ -17,19 +19,20 @@ public class TransaccionSobreGiroDTO implements Serializable {
 	 */
     private static final long serialVersionUID = 1L;
 
-    private BigInteger idSocio;
+    private TipoPersona tipoPersona;
+    private BigInteger idPersona;
     private BigInteger idMoneda;
 
     private BigDecimal monto;
     private BigDecimal interes;
     private Long fechaLimitePago;
 
-    public BigInteger getIdSocio() {
-        return idSocio;
+    public BigInteger getIdPersona() {
+        return idPersona;
     }
 
-    public void setIdSocio(BigInteger idSocio) {
-        this.idSocio = idSocio;
+    public void setIdPersona(BigInteger idPersona) {
+        this.idPersona = idPersona;
     }
 
     public BigInteger getIdMoneda() {
@@ -63,5 +66,13 @@ public class TransaccionSobreGiroDTO implements Serializable {
     public void setFechaLimitePago(Long fechaLimitePago) {
         this.fechaLimitePago = fechaLimitePago;
     }
+
+	public TipoPersona getTipoPersona() {
+		return tipoPersona;
+	}
+
+	public void setTipoPersona(TipoPersona tipoPersona) {
+		this.tipoPersona = tipoPersona;
+	}
 
 }

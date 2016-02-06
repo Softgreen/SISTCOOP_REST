@@ -541,17 +541,18 @@ public class SessionRESTService implements SessionREST {
     }
 
     @Override
-    public Response crearTransaccionSobreGiro(TransaccionSobreGiroDTO transaccion) {
+    public Response crearTransaccionCredito(TransaccionSobreGiroDTO transaccion) {
         Response response;
         try {
-            BigInteger idSocio = transaccion.getIdSocio();
+            TipoPersona tipoPersona = transaccion.getTipoPersona();
+        	BigInteger idPersona = transaccion.getIdPersona();
             BigInteger idMoneda = transaccion.getIdMoneda();
 
             BigDecimal monto = transaccion.getMonto();
             BigDecimal interes = transaccion.getInteres();
             Date fechaLimitePago = new Date(transaccion.getFechaLimitePago());
 
-            BigInteger idTransaccion = sessionServiceTS.crearTransaccionSobreGiro(idSocio, idMoneda, monto,
+            BigInteger idTransaccion = sessionServiceTS.crearTransaccionCredito(tipoPersona, idPersona, idMoneda, monto,
                     interes, fechaLimitePago);
 
             response = Response.status(Response.Status.CREATED).entity(Jsend.getSuccessJSend(idTransaccion))
@@ -567,7 +568,7 @@ public class SessionRESTService implements SessionREST {
     }
 
     @Override
-    public Response crearTransaccionHistorialSobreGiro(TransaccionHistorialSobreGiroDTO historial) {
+    public Response crearTransaccionHistorialCredito(TransaccionHistorialSobreGiroDTO historial) {
         Response response;
         try {
             BigInteger idSobreGiro = historial.getIdSobreGiro();

@@ -117,16 +117,16 @@ public interface SessionREST {
     public Response extornarTransaccionGiro(@PathParam("idGiro") BigInteger idGiro);
 	
 	@POST
-    @Path("/transaccionSobreGiro")
+    @Path("/transaccionCredito")
     @Consumes({ "application/xml", "application/json" })
     @Produces({ "application/xml", "application/json" })
-    public Response crearTransaccionSobreGiro(TransaccionSobreGiroDTO transaccion);
+    public Response crearTransaccionCredito(TransaccionSobreGiroDTO transaccion);
 	
 	@POST
-    @Path("/transaccionSobreGiro/pagar")
+    @Path("/transaccionCredito/pagar")
     @Consumes({ "application/xml", "application/json" })
     @Produces({ "application/xml", "application/json" })
-    public Response crearTransaccionHistorialSobreGiro(TransaccionHistorialSobreGiroDTO historial);
+    public Response crearTransaccionHistorialCredito(TransaccionHistorialSobreGiroDTO historial);
 	
 	@POST
 	@Path("/transaccion/{id}/extornar")

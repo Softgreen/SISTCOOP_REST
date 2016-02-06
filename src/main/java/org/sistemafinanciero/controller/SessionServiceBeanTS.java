@@ -52,6 +52,7 @@ import org.sistemafinanciero.entity.Moneda;
 import org.sistemafinanciero.entity.MonedaDenominacion;
 import org.sistemafinanciero.entity.PendienteCaja;
 import org.sistemafinanciero.entity.PendienteCajaFaltanteView;
+import org.sistemafinanciero.entity.PersonaJuridica;
 import org.sistemafinanciero.entity.PersonaNatural;
 import org.sistemafinanciero.entity.SobreGiro;
 import org.sistemafinanciero.entity.SobreGiroBancario;
@@ -109,6 +110,12 @@ public class SessionServiceBeanTS implements SessionServiceTS {
     @Inject
     private Validator validator;
 
+    @Inject
+	private DAO<Object, PersonaNatural> personaNaturalDAO;
+
+	@Inject
+	private DAO<Object, PersonaJuridica> personaJuridicaDAO;
+	
     @Inject
     private DAO<Object, Socio> socioDAO;
 
@@ -2073,13 +2080,49 @@ public class SessionServiceBeanTS implements SessionServiceTS {
     @AllowedTo(Permission.ABIERTO)
     @AllowedToEstadoMovimiento(EstadoMovimiento.DESCONGELADO)
     @Override
-    public BigInteger crearTransaccionSobreGiro(BigInteger idSocio, BigInteger idMoneda, BigDecimal monto,
+    public BigInteger crearTransaccionCredito(TipoPersona tipoPersona, BigInteger idPersona, BigInteger idMoneda, BigDecimal monto,
             BigDecimal interes, Date fechaLimitePago) throws RollbackFailureException {
+    	PersonaNatural personaNatural = null;
+		PersonaJuridica personaJuridica = null;
 
-        Socio socio = socioDAO.find(idSocio);
-        Moneda moneda = monedaDAO.find(idMoneda);
-        if (socio == null)
-            throw new RollbackFailureException("Socio no encontrado");
+		switch (tipoPersona) {
+		case NATURAL:
+			personaNatural = personaNaturalDAO.find(idPersona);
+			break;
+		case JURIDICA:
+			personaJuridica = personaJuridicaDAO.find(idPersona);
+			break;
+		default:
+			break;
+		}
+		
+    	// verificar si existe el socio
+		Set<Socio> socios = null;
+		Socio socio = null;
+		if (personaNatural != null)
+			socios = personaNatural.getSocios();
+		if (personaJuridica != null)
+			socios = personaJuridica.getSocios();
+		for (Socio s : socios) {
+			if (s.getEstado())
+				socio = s;
+		}
+    		
+		// crear socio sin cuenta de aportes si no existe
+		if (socio == null) {
+			socio = new Socio();
+			socio.setApoderado(null);
+			socio.setCuentaAporte(null);
+			socio.setCuentaBancarias(null);
+			socio.setEstado(true);
+			socio.setFechaInicio(Calendar.getInstance().getTime());
+			socio.setFechaFin(null);
+			socio.setPersonaJuridica(personaJuridica);
+			socio.setPersonaNatural(personaNatural);
+			socioDAO.create(socio);
+		}
+				
+        Moneda moneda = monedaDAO.find(idMoneda);        
         if (moneda == null)
             throw new RollbackFailureException("Moneda no encontrado");
         if (monto.compareTo(BigDecimal.ZERO) != 1) {

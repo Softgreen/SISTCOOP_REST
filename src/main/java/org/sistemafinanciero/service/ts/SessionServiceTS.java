@@ -44,7 +44,7 @@ public interface SessionServiceTS {
 	
 	public BigInteger crearTransaccionGiro(BigInteger idAgenciaOrigen, BigInteger idAgenciaDestino, String numeroDocumentoEmisor, String clienteEmisor, String numeroDocumentoReceptor, String clienteReceptor, BigInteger idMoneda, BigDecimal monto, BigDecimal comision, LugarPagoComision lugarPagoComision, boolean estadoPagoComision) throws RollbackFailureException;
 	
-	public BigInteger crearTransaccionSobreGiro(BigInteger idSocio, BigInteger idMoneda, BigDecimal monto, BigDecimal interes, Date fechaLimitePago) throws RollbackFailureException;
+	public BigInteger crearTransaccionCredito(TipoPersona tipoPersona, BigInteger idPersona, BigInteger idMoneda, BigDecimal monto, BigDecimal interes, Date fechaLimitePago) throws RollbackFailureException;
 	
 	public BigInteger crearTransaccionHistorialSobreGiro(BigInteger idSobreGiro, BigDecimal monto) throws RollbackFailureException;
 	  
