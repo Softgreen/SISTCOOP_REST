@@ -1,6 +1,8 @@
 package org.sistemafinanciero.rest.impl;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -45,4 +47,27 @@ public class PendienteRESTService implements PendienteREST {
 		return response;
 	}
 
+	@Override
+	public Response pendienteHistorial(Long desde, Long hasta, BigInteger idMoneda) {
+		Date desdeReporte = new Date(desde);
+		Date hastaReporte = new Date(hasta);
+
+		List<PendienteCajaView> result = pendienteServiceNT.getPendienteHistorial(desdeReporte, hastaReporte, idMoneda);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
+	}
+	
+	@Override
+	public Response pendienteSobrante(BigInteger idMoneda) {
+		BigDecimal result = pendienteServiceNT.getPendienteSobrante(idMoneda);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
+	}
+
+	@Override
+	public Response pendienteFaltante(BigInteger idMoneda) {
+		BigDecimal result = pendienteServiceNT.getPendienteFaltante(idMoneda);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
+	}
 }

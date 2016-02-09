@@ -1,7 +1,9 @@
 package org.sistemafinanciero.controller;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +13,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.Query;
 
 import org.hibernate.Hibernate;
 import org.sistemafinanciero.dao.DAO;
@@ -23,6 +26,8 @@ import org.sistemafinanciero.entity.PendienteCaja;
 import org.sistemafinanciero.entity.PendienteCajaView;
 import org.sistemafinanciero.entity.dto.VoucherPendienteCaja;
 import org.sistemafinanciero.service.nt.PendienteServiceNT;
+import org.sistemafinanciero.util.DateUtils;
+import org.sistemafinanciero.util.EntityManagerProducer;
 
 @Named
 @Stateless
@@ -35,6 +40,9 @@ public class PendienteServiceBeanNT implements PendienteServiceNT {
     
     @Inject
     private DAO<Object, PendienteCajaView> pendienteCajaViewDAO;
+    
+    @Inject
+	private EntityManagerProducer em;
     
     @Override
 	public List<PendienteCajaView> findAllView(BigInteger idAgencia) {
@@ -102,4 +110,36 @@ public class PendienteServiceBeanNT implements PendienteServiceNT {
     public int count() {
         return pendienteCajaDAO.count();
     }
+
+	@Override
+	public List<PendienteCajaView> getPendienteHistorial(Date desdeReporte,
+			Date hastaReporte, BigInteger idMoneda) {
+		
+		Date desde = DateUtils.getDateIn00Time(desdeReporte);
+		Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(hastaReporte, 1));
+
+		QueryParameter queryParameter = QueryParameter.with("desde", desde).and("hasta", hasta).and("idMoneda", idMoneda);
+		List<PendienteCajaView> pendientes = pendienteCajaViewDAO.findByNamedQuery(PendienteCajaView.findByDesdeHasta,
+				queryParameter.parameters());
+		
+		return pendientes;
+	}
+
+	@Override
+	public BigDecimal getPendienteSobrante(BigInteger idMoneda) {
+		Query query = em.getEm().createQuery(("SELECT SUM(pcv.monto) FROM PendienteCajaView pcv WHERE pcv.tipoPendiente = 'SOBRANTE' AND pcv.idMoneda = :idMoneda"));
+		query.setParameter("idMoneda", idMoneda);
+		Object obj1 = query.getSingleResult();
+
+		return obj1 != null ? ((BigDecimal) obj1).abs() : BigDecimal.ZERO;
+	}
+
+	@Override
+	public BigDecimal getPendienteFaltante(BigInteger idMoneda) {
+		Query query = em.getEm().createQuery(("SELECT SUM(pcv.monto) FROM PendienteCajaView pcv WHERE pcv.tipoPendiente = 'FALTANTE' AND pcv.idMoneda = :idMoneda"));
+		query.setParameter("idMoneda", idMoneda);
+		Object obj1 = query.getSingleResult();
+
+		return obj1 != null ? ((BigDecimal) obj1) : BigDecimal.ZERO;
+	}
 }

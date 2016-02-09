@@ -30,12 +30,14 @@ import org.sistemafinanciero.entity.type.TipoPendienteCaja;
 @Table(name = "PENDIENTES_CAJA_VIEW", schema = "C##BDSISTEMAFINANCIERO")
 @XmlRootElement(name = "pendientecajaview")
 @XmlAccessorType(XmlAccessType.NONE)
-@NamedQueries({@NamedQuery(name = PendienteCajaView.findByIdAgencia, query = "SELECT pc FROM PendienteCajaView pc WHERE pc.idAgencia = :idAgencia ORDER BY pc.fecha, pc.hora")})
+@NamedQueries({@NamedQuery(name = PendienteCajaView.findByIdAgencia, query = "SELECT pc FROM PendienteCajaView pc WHERE pc.idAgencia = :idAgencia ORDER BY pc.fecha, pc.hora"),
+			   @NamedQuery(name = PendienteCajaView.findByDesdeHasta, query = "SELECT pc FROM PendienteCajaView pc WHERE pc.idMoneda = :idMoneda and pc.fecha BETWEEN :desde AND :hasta")})
 public class PendienteCajaView implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	public final static String findByIdAgencia = "PendienteCajaView.findByIdAgencia";
+	public final static String findByDesdeHasta = "PendienteCajaView.findByDesdeHasta";
 
 	private BigInteger idPendienteCaja;
 	private Date fecha;
@@ -48,6 +50,8 @@ public class PendienteCajaView implements java.io.Serializable {
 	private String abreviaturaCaja;
 	private BigInteger idMoneda;
 	private BigInteger idAgencia;
+	private String denominacionAgencia;
+	private String abreviaturaAgencia;
 	private String denominacionMoneda;
 	private String simboloMoneda;
 
@@ -166,6 +170,26 @@ public class PendienteCajaView implements java.io.Serializable {
 
 	public void setIdAgencia(BigInteger idAgencia) {
 		this.idAgencia = idAgencia;
+	}
+
+	@XmlElement(name = "denominacionAgencia")
+	@Column(name = "DENOMINACION_AGENCIA", columnDefinition = "nvarchar2")
+	public String getDenominacionAgencia() {
+		return denominacionAgencia;
+	}
+
+	public void setDenominacionAgencia(String denominacionAgencia) {
+		this.denominacionAgencia = denominacionAgencia;
+	}
+
+	@XmlElement(name = "abreviaturaAgencia")
+	@Column(name = "ABREVIATURA_AGENCIA", columnDefinition = "nvarchar2")
+	public String getAbreviaturaAgencia() {
+		return abreviaturaAgencia;
+	}
+
+	public void setAbreviaturaAgencia(String abreviaturaAgencia) {
+		this.abreviaturaAgencia = abreviaturaAgencia;
 	}
 
 	@XmlElement(name = "denominacionMoneda")
