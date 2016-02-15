@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -15,6 +16,7 @@ import javax.inject.Named;
 import org.hibernate.Hibernate;
 import org.sistemafinanciero.dao.DAO;
 import org.sistemafinanciero.dao.QueryParameter;
+import org.sistemafinanciero.entity.Accionista;
 import org.sistemafinanciero.entity.HistorialPagoSobreGiro;
 import org.sistemafinanciero.entity.Moneda;
 import org.sistemafinanciero.entity.PersonaJuridica;
@@ -46,11 +48,19 @@ public class SobreGiroServiceBeanNT implements SobreGiroServiceNT {
         PersonaJuridica pj = socio.getPersonaJuridica();
         Moneda moneda = sobreGiro.getMoneda();
 
-        TipoDocumento tipoDocumento = pn != null ? pn.getTipoDocumento() : pj.getTipoDocumento();
+        TipoDocumento tipoDocumento = (pn != null ? pn.getTipoDocumento() : pj.getTipoDocumento());
 
         Hibernate.initialize(socio);
-        Hibernate.initialize(pn);
-        Hibernate.initialize(pj);
+        if(pn != null){
+        	Hibernate.initialize(pn);
+        }        	
+        if(pj != null) {
+        	Set<Accionista> accionistas = pj.getAccionistas();
+        	for (Accionista acc : accionistas) {
+        		Hibernate.initialize(acc);	
+			}
+        	Hibernate.initialize(pj);	
+        }        	
         Hibernate.initialize(moneda);
         Hibernate.initialize(tipoDocumento);
 
@@ -131,8 +141,16 @@ public class SobreGiroServiceBeanNT implements SobreGiroServiceNT {
             TipoDocumento tipoDocumento = pn != null ? pn.getTipoDocumento() : pj.getTipoDocumento();
 
             Hibernate.initialize(socio);
-            Hibernate.initialize(pn);
-            Hibernate.initialize(pj);
+            if(pn != null){
+            	Hibernate.initialize(pn);
+            }        	
+            if(pj != null) {
+            	Set<Accionista> accionistas = pj.getAccionistas();
+            	for (Accionista acc : accionistas) {
+            		Hibernate.initialize(acc);	
+    			}
+            	Hibernate.initialize(pj);	
+            }        	
             Hibernate.initialize(moneda);
             Hibernate.initialize(tipoDocumento);
         }
