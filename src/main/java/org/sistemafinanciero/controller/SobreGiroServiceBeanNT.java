@@ -69,14 +69,12 @@ public class SobreGiroServiceBeanNT implements SobreGiroServiceNT {
 
     @Override
     public List<SobreGiro> findAll() {
-        // TODO Auto-generated method stub
-        return null;
+    	return sobreGiroDAO.findAll();
     }
 
     @Override
     public int count() {
-        // TODO Auto-generated method stub
-        return 0;
+    	return sobreGiroDAO.count();
     }
 
     @Override
@@ -117,8 +115,16 @@ public class SobreGiroServiceBeanNT implements SobreGiroServiceNT {
             TipoDocumento tipoDocumento = pn != null ? pn.getTipoDocumento() : pj.getTipoDocumento();
 
             Hibernate.initialize(socio);
-            Hibernate.initialize(pn);
-            Hibernate.initialize(pj);
+            if(pn != null){
+            	Hibernate.initialize(pn);
+            }        	
+            if(pj != null) {
+            	Set<Accionista> accionistas = pj.getAccionistas();
+            	for (Accionista acc : accionistas) {
+            		Hibernate.initialize(acc);	
+    			}
+            	Hibernate.initialize(pj);	
+            }      
             Hibernate.initialize(moneda);
             Hibernate.initialize(tipoDocumento);
         }
@@ -138,7 +144,7 @@ public class SobreGiroServiceBeanNT implements SobreGiroServiceNT {
             PersonaJuridica pj = socio.getPersonaJuridica();
             Moneda moneda = sobreGiro.getMoneda();
 
-            TipoDocumento tipoDocumento = pn != null ? pn.getTipoDocumento() : pj.getTipoDocumento();
+            TipoDocumento tipoDocumento = (pn != null ? pn.getTipoDocumento() : pj.getTipoDocumento());
 
             Hibernate.initialize(socio);
             if(pn != null){
