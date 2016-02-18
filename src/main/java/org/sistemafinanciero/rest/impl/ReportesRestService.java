@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.sistemafinanciero.entity.DebeHaber;
+import org.sistemafinanciero.entity.TransaccionBovedaOtroView;
 import org.sistemafinanciero.entity.Utilidad;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
 import org.sistemafinanciero.rest.ReportesRest;
@@ -444,6 +445,16 @@ public class ReportesRestService implements ReportesRest {
 		Date hastaReporte = new Date(hasta);
 
 		List<Utilidad> result = reportesServiceNT.getUtilidadHistorial(desdeReporte, hastaReporte);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
+	}
+
+	@Override
+	public Response reporteUtilidadMovimientos(Long desde, Long hasta) {
+		Date desdeReporte = new Date(desde);
+		Date hastaReporte = new Date(hasta);
+
+		List<TransaccionBovedaOtroView> result = reportesServiceNT.getUtilidadMovimientos(desdeReporte, hastaReporte);
 		Response response = Response.status(Response.Status.OK).entity(result).build();
 		return response;
 	}
