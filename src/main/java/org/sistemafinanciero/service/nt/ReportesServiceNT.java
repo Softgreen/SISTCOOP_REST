@@ -8,6 +8,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import org.sistemafinanciero.entity.DebeHaber;
+import org.sistemafinanciero.entity.TransaccionBovedaOtroView;
 import org.sistemafinanciero.entity.Utilidad;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
 
@@ -32,5 +33,7 @@ public interface ReportesServiceNT {
 	public BigDecimal getTotalUtilidad(BigInteger idMoneda, Date fechaReporte);
 
 	public List<Utilidad> getUtilidadHistorial(Date desdeReporte, Date hastaReporte);
+
+	public List<TransaccionBovedaOtroView> getUtilidadMovimientos(Date desdeReporte, Date hastaReporte);
 
 }

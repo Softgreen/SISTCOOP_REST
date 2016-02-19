@@ -16,8 +16,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.Query;
 
+import org.hibernate.Hibernate;
 import org.sistemafinanciero.dao.DAO;
 import org.sistemafinanciero.dao.QueryParameter;
+import org.sistemafinanciero.entity.Agencia;
 import org.sistemafinanciero.entity.CuentaBancaria;
 import org.sistemafinanciero.entity.DebeHaber;
 import org.sistemafinanciero.entity.Moneda;
@@ -25,6 +27,7 @@ import org.sistemafinanciero.entity.PersonaJuridica;
 import org.sistemafinanciero.entity.PersonaNatural;
 import org.sistemafinanciero.entity.Socio;
 import org.sistemafinanciero.entity.TipoDocumento;
+import org.sistemafinanciero.entity.TransaccionBovedaOtroView;
 import org.sistemafinanciero.entity.Utilidad;
 import org.sistemafinanciero.entity.type.EstadoCuentaBancaria;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
@@ -41,6 +44,9 @@ import org.sistemafinanciero.util.EntityManagerProducer;
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class ReportesServiceBeanNT implements ReportesServiceNT {
 
+	@Inject
+	private DAO<Object, TransaccionBovedaOtroView> transaccionBovedaOtroViewDAO;
+	
 	@Inject
 	private DAO<Object, CuentaBancaria> cuentaBancariaDAO;
 
@@ -388,6 +394,26 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 		QueryParameter queryParameter = QueryParameter.with("desde", desde).and("hasta", hasta);
 		List<Utilidad> utilidades = utilidadDAO.findByNamedQuery(Utilidad.findByDesdeHasta,
 				queryParameter.parameters());
+		
+		return utilidades;
+	}
+
+	@Override
+	public List<TransaccionBovedaOtroView> getUtilidadMovimientos(Date desdeReporte, Date hastaReporte) {
+		//transaccionBovedaOtroViewDAO
+		Date desde = DateUtils.getDateIn00Time(desdeReporte);
+		Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(hastaReporte, 1));
+
+		QueryParameter queryParameter = QueryParameter.with("desde", desde).and("hasta", hasta);
+		List<TransaccionBovedaOtroView> utilidades = transaccionBovedaOtroViewDAO.findByNamedQuery(TransaccionBovedaOtroView.findUtilidadByDesdeHasta,
+				queryParameter.parameters());
+		
+		for (TransaccionBovedaOtroView transaccionBovedaOtroView : utilidades) {
+			Agencia agencia = transaccionBovedaOtroView.getAgencia();
+			Moneda moneda = transaccionBovedaOtroView.getMoneda();
+			Hibernate.initialize(agencia);
+			Hibernate.initialize(moneda);
+		}
 		
 		return utilidades;
 	}

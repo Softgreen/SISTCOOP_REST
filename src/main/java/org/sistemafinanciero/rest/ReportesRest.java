@@ -68,4 +68,9 @@ public interface ReportesRest {
 	@Produces({ "application/xml", "application/json" })
 	public Response reporteUtilidadHistorial(@QueryParam("desde") Long desde, @QueryParam("hasta") Long hasta);
 
+	@GET
+	@Path("/utilidad/movimientos")
+	@Produces({ "application/xml", "application/json" })
+	public Response reporteUtilidadMovimientos(@QueryParam("desde") Long desde, @QueryParam("hasta") Long hasta);
+	
 }
