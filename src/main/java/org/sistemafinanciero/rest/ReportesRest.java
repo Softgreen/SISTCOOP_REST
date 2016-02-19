@@ -2,12 +2,14 @@ package org.sistemafinanciero.rest;
 
 import java.math.BigInteger;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.sistemafinanciero.entity.type.Periodo;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
 
 @Path("/reportes")
@@ -22,8 +24,9 @@ public interface ReportesRest {
 	@GET
 	@Path("/debeHaber/simplificado")
 	@Produces({ "application/xml", "application/json" })
-	public Response reporteDebeHaberSimplificado(@QueryParam("fecha") Long fecha, @QueryParam("tipo") TipoDebeHaber tipoDebeHaber);
-	
+	public Response reporteDebeHaberSimplificado(@QueryParam("fecha") Long fecha,
+			@QueryParam("tipo") TipoDebeHaber tipoDebeHaber);
+
 	@GET
 	@Path("/debeHaber/pdf")
 	@Produces({ "application/xml", "application/json" })
@@ -69,8 +72,14 @@ public interface ReportesRest {
 	public Response reporteUtilidadHistorial(@QueryParam("desde") Long desde, @QueryParam("hasta") Long hasta);
 
 	@GET
+	@Path("/utilidad/historialPeriodo")
+	@Produces({ "application/xml", "application/json" })
+	public Response reporteUtilidadHistorialPeriodo(@QueryParam("desde") Long desde, @QueryParam("hasta") Long hasta,
+			@QueryParam("periodo") @DefaultValue("DIARIO") Periodo periodo);
+
+	@GET
 	@Path("/utilidad/movimientos")
 	@Produces({ "application/xml", "application/json" })
 	public Response reporteUtilidadMovimientos(@QueryParam("desde") Long desde, @QueryParam("hasta") Long hasta);
-	
+
 }

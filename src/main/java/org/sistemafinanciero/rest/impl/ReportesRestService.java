@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.core.Response;
 
 import org.joda.time.DateTime;
@@ -22,8 +23,10 @@ import org.joda.time.LocalDate;
 import org.sistemafinanciero.entity.DebeHaber;
 import org.sistemafinanciero.entity.TransaccionBovedaOtroView;
 import org.sistemafinanciero.entity.Utilidad;
+import org.sistemafinanciero.entity.type.Periodo;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
 import org.sistemafinanciero.rest.ReportesRest;
+import org.sistemafinanciero.rest.dto.UtilidadPorPeriodoDTO;
 import org.sistemafinanciero.service.nt.ReportesServiceNT;
 
 import com.itextpdf.text.Chunk;
@@ -62,11 +65,11 @@ public class ReportesRestService implements ReportesRest {
 			fechaReporte = null;
 		}
 
-		List<DebeHaber> list = reportesServiceNT.getDebeHaber(fechaReporte, idMoneda, tipoDebeHaber);			
+		List<DebeHaber> list = reportesServiceNT.getDebeHaber(fechaReporte, idMoneda, tipoDebeHaber);
 		Response response = Response.status(Response.Status.OK).entity(list).build();
 		return response;
 	}
-	
+
 	@Override
 	public Response reporteDebeHaberSimplificado(Long fecha, TipoDebeHaber tipoDebeHaber) {
 		Date fechaReporte = null;
@@ -445,6 +448,16 @@ public class ReportesRestService implements ReportesRest {
 		Date hastaReporte = new Date(hasta);
 
 		List<Utilidad> result = reportesServiceNT.getUtilidadHistorial(desdeReporte, hastaReporte);
+		Response response = Response.status(Response.Status.OK).entity(result).build();
+		return response;
+	}
+
+	@Override
+	public Response reporteUtilidadHistorialPeriodo(Long desde, Long hasta, Periodo periodo) {
+		Date desdeReporte = new Date(desde);
+		Date hastaReporte = new Date(hasta);
+
+		List<UtilidadPorPeriodoDTO> result = reportesServiceNT.getUtilidadHistorial(desdeReporte, hastaReporte, periodo);
 		Response response = Response.status(Response.Status.OK).entity(result).build();
 		return response;
 	}

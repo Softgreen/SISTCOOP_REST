@@ -10,7 +10,9 @@ import javax.ejb.Remote;
 import org.sistemafinanciero.entity.DebeHaber;
 import org.sistemafinanciero.entity.TransaccionBovedaOtroView;
 import org.sistemafinanciero.entity.Utilidad;
+import org.sistemafinanciero.entity.type.Periodo;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
+import org.sistemafinanciero.rest.dto.UtilidadPorPeriodoDTO;
 
 @Remote
 public interface ReportesServiceNT {
@@ -35,5 +37,7 @@ public interface ReportesServiceNT {
 	public List<Utilidad> getUtilidadHistorial(Date desdeReporte, Date hastaReporte);
 
 	public List<TransaccionBovedaOtroView> getUtilidadMovimientos(Date desdeReporte, Date hastaReporte);
+
+	public List<UtilidadPorPeriodoDTO> getUtilidadHistorial(Date desdeReporte, Date hastaReporte, Periodo periodo);
 
 }

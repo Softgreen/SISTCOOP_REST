@@ -15,6 +15,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.hibernate.Hibernate;
 import org.sistemafinanciero.dao.DAO;
@@ -30,8 +31,10 @@ import org.sistemafinanciero.entity.TipoDocumento;
 import org.sistemafinanciero.entity.TransaccionBovedaOtroView;
 import org.sistemafinanciero.entity.Utilidad;
 import org.sistemafinanciero.entity.type.EstadoCuentaBancaria;
+import org.sistemafinanciero.entity.type.Periodo;
 import org.sistemafinanciero.entity.type.TipoDebeHaber;
 import org.sistemafinanciero.entity.type.TipoPersona;
+import org.sistemafinanciero.rest.dto.UtilidadPorPeriodoDTO;
 import org.sistemafinanciero.service.nt.ReporteCajaBancosServiceNT;
 import org.sistemafinanciero.service.nt.ReportesServiceNT;
 import org.sistemafinanciero.service.nt.VariableSistemaServiceNT;
@@ -416,6 +419,58 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 		}
 		
 		return utilidades;
+	}
+
+	@Override
+	public List<UtilidadPorPeriodoDTO> getUtilidadHistorial(Date desdeReporte, Date hastaReporte, Periodo periodo) {
+		List<UtilidadPorPeriodoDTO> results = new ArrayList<>();
+
+		if(periodo.equals(Periodo.DIARIO)) {
+			Query query = em.getEm().createNativeQuery("SELECT to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), to_char(fecha, 'dd'), SUM(UTILIDAD_POR_DIA) Utilidad FROM UTILIDAD WHERE fecha BETWEEN :desde AND :hasta GROUP BY to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), to_char(fecha, 'dd') ORDER BY 1, 2, 3", Object[].class);
+			List<Object[]> resultsQuery = query.getResultList();
+			for (Object[] result : resultsQuery) {
+				UtilidadPorPeriodoDTO utilidad = new UtilidadPorPeriodoDTO();
+				utilidad.setAnio((int) result[0]);
+				utilidad.setMes((int) result[1]);
+				utilidad.setDia((int) result[2]);
+				utilidad.setUtilidad((BigDecimal) result[3]);
+				results.add(utilidad);
+			}
+		} else if(periodo.equals(Periodo.MENSUAL)) {
+			Query query = em.getEm().createNativeQuery("SELECT to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), SUM(UTILIDAD_POR_DIA) Utilidad FROM UTILIDAD WHEREfecha BETWEEN :desde AND :hasta GROUP BY to_char(fecha, 'YYYY'), to_char(fecha, 'MM') ORDER BY 1, 2", Object[].class);
+			List<Object[]> resultsQuery = query.getResultList();
+			for (Object[] result : resultsQuery) {
+				UtilidadPorPeriodoDTO utilidad = new UtilidadPorPeriodoDTO();
+				utilidad.setAnio((int) result[0]);
+				utilidad.setMes((int) result[1]);
+				utilidad.setUtilidad((BigDecimal) result[2]);
+				results.add(utilidad);
+			}
+		} else if(periodo.equals(Periodo.ANUAL)) {
+			Query query = em.getEm().createNativeQuery("SELECT to_char(fecha, 'YYYY'), SUM(UTILIDAD_POR_DIA) FROM UTILIDAD WHERE fecha BETWEEN :desde AND :hasta GROUP BY to_char(fecha, 'YYYY') ORDER BY 1", Object[].class);
+			List<Object[]> resultsQuery = query.getResultList();
+			for (Object[] result : resultsQuery) {
+				UtilidadPorPeriodoDTO utilidad = new UtilidadPorPeriodoDTO();
+				utilidad.setAnio((int) result[0]);
+				utilidad.setUtilidad((BigDecimal) result[1]);
+				results.add(utilidad);
+			}
+		}
+		/**
+		 SELECT to_char(fecha, 'YYYY'), SUM(UTILIDAD_POR_DIA) FROM UTILIDAD GROUP BY to_char(fecha, 'YYYY') ORDER BY 1;
+
+			SELECT to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), SUM(UTILIDAD_POR_DIA) Utilidad
+			FROM UTILIDAD
+			GROUP BY to_char(fecha, 'YYYY'), to_char(fecha, 'MM')
+			ORDER BY 1, 2;
+			
+			SELECT to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), to_char(fecha, 'dd'), SUM(UTILIDAD_POR_DIA) Utilidad
+			FROM UTILIDAD
+			GROUP BY to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), to_char(fecha, 'dd')
+			ORDER BY 1, 2, 3;
+		 */
+				
+		return results;
 	}
 
 }
