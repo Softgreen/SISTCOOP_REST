@@ -182,8 +182,7 @@ public class PersonaNatural implements java.io.Serializable {
 
     @XmlAttribute(name = "apellidoMaterno")
     @NotNull
-    @NotBlank
-    @Size(min = 1, max = 60)
+    @Size(min = 0, max = 60)
     @Column(name = "APELLIDO_MATERNO", nullable = false, length = 120, columnDefinition = "nvarchar2")
     public String getApellidoMaterno() {
         return this.apellidoMaterno;
