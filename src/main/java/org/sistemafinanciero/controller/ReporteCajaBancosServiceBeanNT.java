@@ -62,11 +62,11 @@ public class ReporteCajaBancosServiceBeanNT implements ReporteCajaBancosServiceN
 	}
 
 	@Override
-	public BigDecimal getTotalBancos(BigInteger idMoneda) {		
-		Query queryIngresos = em.getEm().createQuery("SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'BANCOS' AND t.tipoTransaccion = 'INGRESO'");
+	public BigDecimal getTotalBancos(BigInteger idMoneda) {				
+		Query queryIngresos = em.getEm().createQuery("SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.moneda.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'BANCOS' AND t.tipoTransaccion = 'INGRESO'");
 		queryIngresos.setParameter("idMoneda", idMoneda);		
 		
-		Query queryEgresos = em.getEm().createQuery("SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'BANCOS' AND t.tipoTransaccion = 'EGRESO'");
+		Query queryEgresos = em.getEm().createQuery("SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.moneda.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'BANCOS' AND t.tipoTransaccion = 'EGRESO'");
 		queryEgresos.setParameter("idMoneda", idMoneda);
 		
 		Object obj1 = queryIngresos.getSingleResult();

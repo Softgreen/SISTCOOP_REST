@@ -327,11 +327,11 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 	public BigDecimal getPatrimonio(BigInteger idMoneda, Date fechaReporte) {
 		// TODO Auto-generated method stub
 		Query queryIngresos = em.getEm().createQuery(
-				"SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'PATRIMONIO' AND t.tipoTransaccion = 'INGRESO'");
+				"SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.moneda.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'PATRIMONIO' AND t.tipoTransaccion = 'INGRESO'");
 		queryIngresos.setParameter("idMoneda", idMoneda);
 
 		Query queryEgresos = em.getEm().createQuery(
-				"SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'PATRIMONIO' AND t.tipoTransaccion = 'EGRESO'");
+				"SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.moneda.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'PATRIMONIO' AND t.tipoTransaccion = 'EGRESO'");
 		queryEgresos.setParameter("idMoneda", idMoneda);
 
 		Object obj1 = queryIngresos.getSingleResult();
@@ -378,7 +378,7 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 		BigDecimal patrimonio = getPatrimonio(idMoneda, null);
 
 		Query queryEgresosUtilidad = em.getEm().createQuery(
-				"SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'UTILIDAD' AND t.tipoTransaccion = 'EGRESO'");
+				"SELECT sum(t.monto) FROM TransaccionBovedaOtroView T WHERE t.moneda.idMoneda = :idMoneda AND t.estado = TRUE AND t.entidad = 'UTILIDAD' AND t.tipoTransaccion = 'EGRESO'");
 		queryEgresosUtilidad.setParameter("idMoneda", idMoneda);
 		Object obj1 = queryEgresosUtilidad.getSingleResult();
 		BigDecimal montoEgresoUtilidad = obj1 != null ? (BigDecimal) obj1 : BigDecimal.ZERO;
