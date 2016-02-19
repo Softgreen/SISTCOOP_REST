@@ -431,5 +431,4 @@ public class PersonaNatural implements java.io.Serializable {
             return this.tipoDocumento.hashCode() * this.numeroDocumento.hashCode();
         return 0;
     }
-
 }
