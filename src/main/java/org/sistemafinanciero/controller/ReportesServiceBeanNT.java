@@ -429,8 +429,9 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 		if(periodo.equals(Periodo.DIARIO)) {
 			Query query = em.getEm().createNativeQuery("SELECT to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), to_char(fecha, 'dd'), SUM(UTILIDAD_POR_DIA) Utilidad FROM UTILIDAD WHERE fecha BETWEEN :desde AND :hasta GROUP BY to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), to_char(fecha, 'dd') ORDER BY 1, 2, 3");
 			
-			Date desde = DateUtils.getDateIn00Time(desdeReporte);
-			Date hasta = DateUtils.getDateIn00Time(DateUtils.sumarRestarDiasFecha(hastaReporte, 1));
+			Date desde = new LocalDate(desdeReporte.getTime()).toDateTimeAtStartOfDay().toDate();
+			Date hasta = new LocalDate(hastaReporte.getTime()).plusDays(1).toDateTimeAtStartOfDay().toDate();
+						
 			query.setParameter("desde", desde);
 			query.setParameter("hasta", hasta);
 			
@@ -444,7 +445,7 @@ public class ReportesServiceBeanNT implements ReportesServiceNT {
 				results.add(utilidad);
 			}
 		} else if(periodo.equals(Periodo.MENSUAL)) {
-			Query query = em.getEm().createNativeQuery("SELECT to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), SUM(UTILIDAD_POR_DIA) Utilidad FROM UTILIDAD WHEREfecha BETWEEN :desde AND :hasta GROUP BY to_char(fecha, 'YYYY'), to_char(fecha, 'MM') ORDER BY 1, 2");
+			Query query = em.getEm().createNativeQuery("SELECT to_char(fecha, 'YYYY'), to_char(fecha, 'MM'), SUM(UTILIDAD_POR_DIA) Utilidad FROM UTILIDAD WHERE fecha BETWEEN :desde AND :hasta GROUP BY to_char(fecha, 'YYYY'), to_char(fecha, 'MM') ORDER BY 1, 2");
 						
 			Date desde = new LocalDate(desdeReporte.getTime()).dayOfMonth().withMinimumValue().toDateTimeAtStartOfDay().toDate();
 			Date hasta = new LocalDate(hastaReporte.getTime()).dayOfMonth().withMaximumValue().plusDays(1).toDateTimeAtStartOfDay().toDate();			   
